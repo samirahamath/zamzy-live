@@ -1,0 +1,7 @@
+# Environment and Local Config
+.env
+*.log
+
+# OS Metadata
+.DS_Store
+Thumbs.db

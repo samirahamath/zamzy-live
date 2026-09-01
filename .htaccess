@@ -1,0 +1,23 @@
+# ZAMZY Platform — Clean URL Routing Engine
+RewriteEngine On
+RewriteBase /zz/
+
+# Redirect trailing slashes if not a folder
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ $1 [R=301,L]
+
+# Clean admin routing
+RewriteRule ^admin/?$ admin/index.php [L]
+RewriteRule ^admin/login/?$ admin/login.php [L]
+
+# Resolve clean extensionless files (.php then .html)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/]+)$ $1.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^([^/]+)$ $1.html [L]
+
+# Custom Error Pages if needed
+ErrorDocument 404 /zz/index.html
