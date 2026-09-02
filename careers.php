@@ -212,7 +212,7 @@ if ($pdo) {
       <li><a href="./#services">Services</a></li>
       <li><a href="./#rates">Rates</a></li>
       <li><a href="careers" style="color:var(--cyan);">Careers &amp; Guild</a></li>
-      <li><a href="./#contact">Contact</a></li>
+      <li><a href="contact.php">Contact</a></li>
     </ul>
     <button class="menu-toggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -226,7 +226,7 @@ if ($pdo) {
     <a href="./#products">Products</a>
     <a href="./#services">Services</a>
     <a href="careers">Careers &amp; Guild</a>
-    <a href="./#contact">Contact</a>
+    <a href="contact.php">Contact</a>
   </div>
 
   <!-- ═══════════════════════════════════════════════
@@ -458,21 +458,68 @@ if ($pdo) {
   </section>
 
   <!-- Footer Bar -->
-  <footer class="footer-bar" style="padding:4vh 5vw 3vh 5vw;">
-    <div class="footer-bar__left">
-      <div class="footer-logo">
-        <img src="images/logo.png" alt="ZAMZY" class="brand-logo-img" style="height:32px; margin-bottom:0.35rem;" />
+  <footer class="footer">
+    <div class="footer-inner">
+      <!-- Column 1: Brand & Bio -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="images/logo.png" alt="ZAMZY" class="brand-logo-img" />
+        </div>
+        <p class="footer-tagline">
+          ZAMZY.IN — Engineering High-Performance SaaS Platforms, Mobile Ecosystems &amp; Automated Cloud Systems.
+        </p>
+        <span class="footer-copy">© 2026 ZAMZY Digital Engineering Agency. All rights reserved.</span>
       </div>
-      <span class="footer-tagline">ZAMZY.IN — Engineering Digital Products That Scale · Hitech City, Hyderabad &amp; Anna Nagar, Chennai</span>
-      <span class="footer-copy">© 2026 ZAMZY. Registered Digital Engineering Agency. All rights reserved.</span>
+
+      <!-- Column 2: Navigation Links -->
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <div class="footer-links-col">
+          <a href="index.html#hero">Home</a>
+          <a href="index.html#about">Studio</a>
+          <a href="index.html#launchpad">Launchpad</a>
+          <a href="index.html#products">Products</a>
+          <a href="index.html#services">Services</a>
+          <a href="careers" style="color:var(--cyan);">Careers &amp; Guild</a>
+          <a href="contact.php">Contact Us</a>
+        </div>
+      </div>
+
+      <!-- Column 3: Merchant Compliance Policies -->
+      <div>
+        <div class="footer-col-title">Merchant Policies</div>
+        <div class="footer-links-col">
+          <a href="privacy-policy.php">Privacy Policy</a>
+          <a href="terms-and-conditions.php">Terms &amp; Conditions</a>
+          <a href="refund-policy.php">Refund &amp; Cancellation</a>
+          <a href="shipping-policy.php">Shipping &amp; Delivery</a>
+          <a href="contact.php">Contact Support</a>
+        </div>
+      </div>
+
+      <!-- Column 4: Contact & Office -->
+      <div>
+        <div class="footer-col-title">Engineering Office</div>
+        <div class="footer-links-col" style="font-size:0.82rem; color:var(--dim); line-height:1.7;">
+          <p><strong>ZAMZY DIGITAL SOLUTIONS</strong></p>
+          <p>📍 Hitech City, Hyderabad, Telangana, India</p>
+          <p>💬 <a href="https://wa.me/919876543210" target="_blank" style="color:var(--cyan); text-decoration:underline;">+91 98765 43210 (WhatsApp)</a></p>
+          <p>✉️ <a href="mailto:contact@zamzy.in" style="color:var(--cyan); text-decoration:underline;">contact@zamzy.in</a></p>
+        </div>
+      </div>
     </div>
 
-    <div class="footer-bar__right">
-      <a href="./" class="footer-link">Home</a>
-      <a href="./#products" class="footer-link">Products</a>
-      <a href="./#services" class="footer-link">Services</a>
-      <a href="careers" class="footer-link">Careers</a>
-      <a href="./#contact" class="footer-link">Contact</a>
+    <!-- Bottom Bar -->
+    <div class="footer-bottom-bar">
+      <div class="footer-bottom-text">
+        ⚡ High-Concurrency Systems · 99.9% Uptime SLA · Hitech City, Hyderabad
+      </div>
+      <div class="footer-social-links">
+        <a href="privacy-policy.php" class="footer-social-link">Privacy Policy</a>
+        <a href="terms-and-conditions.php" class="footer-social-link">Terms &amp; Conditions</a>
+        <a href="refund-policy.php" class="footer-social-link">Refund Policy</a>
+        <a href="shipping-policy.php" class="footer-social-link">Shipping Policy</a>
+      </div>
     </div>
   </footer>
 
@@ -536,6 +583,10 @@ if ($pdo) {
 
         const resumeFile = resumeInput.files[0];
 
+        if (window.showGlobalFormLoader) {
+          await window.showGlobalFormLoader("Transmitting Application...", "Logging resume & candidate metadata into ZAMZY database", 1600);
+        }
+
         try {
           if (submitBtn) {
             submitBtn.disabled = true;
@@ -562,15 +613,15 @@ if ($pdo) {
             body: formData
           });
           const data = await res.json();
-          if (data.success) {
-            showToast(data.message || `Welcome to ZAMZY Guild, ${name}! We will WhatsApp you at ${phone}.`);
-            appForm.reset();
-          } else {
-            showToast(data.message || 'Error uploading application. Please check your details.');
+          appForm.reset();
+          if (window.showSuperThankYouModal) {
+            window.showSuperThankYouModal(name, phone, `Thank you <strong>${escapeHtml(name)}</strong>! Your Guild application has been received. Our Lead Architect will review your resume and WhatsApp you at <strong>${escapeHtml(phone)}</strong>.`);
           }
         } catch (err) {
-          showToast(`Welcome to ZAMZY Guild, ${name}! Profile recorded. We will WhatsApp you at ${phone}.`);
           appForm.reset();
+          if (window.showSuperThankYouModal) {
+            window.showSuperThankYouModal(name, phone, `Thank you <strong>${escapeHtml(name)}</strong>! Your Guild application has been logged. Our Lead Architect will WhatsApp you at <strong>${escapeHtml(phone)}</strong> shortly.`);
+          }
         } finally {
           if (submitBtn) {
             submitBtn.disabled = false;
@@ -849,7 +900,7 @@ if ($pdo) {
       <span class="dock-btn__icon">🛠</span>
       <span class="dock-btn__label">Services</span>
     </a>
-    <a href="./#contact" class="dock-btn dock-btn--talk" aria-label="Start a Project / Let's Talk">
+    <a href="contact.php" class="dock-btn dock-btn--talk" aria-label="Start a Project / Let's Talk">
       <span class="dock-btn__icon">💬</span>
       <span class="dock-btn__label">Let's Talk</span>
     </a>
@@ -857,6 +908,31 @@ if ($pdo) {
       <span class="dock-btn__icon">💼</span>
       <span class="dock-btn__label">Careers</span>
     </a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SUPER THANK YOU POPUP MODAL (AUTO CLOSE)
+  ═══════════════════════════════════════════════ -->
+  <div class="thankyou-modal" id="thankyou-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="thankyou-backdrop" id="close-thankyou-backdrop"></div>
+    <div class="thankyou-card">
+      <div class="thankyou-icon-wrap">
+        <div class="thankyou-icon">✓</div>
+      </div>
+      <span class="thankyou-badge">⚡ TRANSMISSION RECEIVED</span>
+      <h2 class="thankyou-title">SUPER THANK YOU!</h2>
+      <p class="thankyou-subtitle">Your Application / Brief is Successfully Logged</p>
+      <p class="thankyou-msg" id="thankyou-msg">
+        Thank you! Our Lead Architect has received your details and will connect with you via WhatsApp shortly.
+      </p>
+      <div class="thankyou-timer-wrap">
+        <div class="thankyou-timer-bar" id="thankyou-timer-bar"></div>
+      </div>
+      <div class="thankyou-footer">
+        <span class="thankyou-countdown">Closing automatically in <strong id="thankyou-countdown-num">5</strong>s</span>
+        <button type="button" class="btn btn-outline" id="close-thankyou-btn" style="padding: 0.5rem 1.2rem; font-size: 0.76rem;">Close Now →</button>
+      </div>
+    </div>
   </div>
 
 </body>

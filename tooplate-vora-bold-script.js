@@ -372,6 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const phone = document.getElementById('demo-phone').value;
       const email = document.getElementById('demo-email').value;
 
+      await window.showGlobalFormLoader("Generating Credentials...", "Dispatching sandbox access keys to WhatsApp", 1600);
+
       try {
         const formData = new FormData();
         formData.append('action', 'submit_demo');
@@ -387,11 +389,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         demoModal.classList.remove('open');
         demoRequestForm.reset();
-        showToast(data.message || `Credentials for ${product} dispatched to ${phone}!`);
+        showSuperThankYouModal("Partner", phone, `Sandbox credentials for <strong>${escapeHtml(product)}</strong> dispatched to WhatsApp at <strong>${escapeHtml(phone)}</strong>!`);
       } catch (err) {
         demoModal.classList.remove('open');
         demoRequestForm.reset();
-        showToast(`Credentials for ${product} dispatched to ${phone} via WhatsApp!`);
+        showSuperThankYouModal("Partner", phone, `Sandbox credentials for <strong>${escapeHtml(product)}</strong> dispatched to WhatsApp at <strong>${escapeHtml(phone)}</strong>!`);
       }
     });
   }
@@ -432,6 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const projectType = document.getElementById('rev-project').value;
       const text = document.getElementById('rev-text').value;
 
+      await window.showGlobalFormLoader("Recording Review...", "Verifying client metadata & logging testimonial", 1600);
+
       try {
         const formData = new FormData();
         formData.append('action', 'submit_review');
@@ -461,6 +465,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ═══════════════════════════════════════════════
+     GLOBAL UIVERSE FORM SUBMISSION LOADER ENGINE
+  ═══════════════════════════════════════════════ */
+  window.showGlobalFormLoader = function (title, sub, durationMs = 1800) {
+    let loader = document.getElementById('global-form-loader');
+    if (!loader) {
+      loader = document.createElement('div');
+      loader.id = 'global-form-loader';
+      loader.className = 'global-loader-overlay';
+      loader.setAttribute('aria-hidden', 'true');
+      loader.innerHTML = `
+        <div class="global-loader-card">
+          <div class="speeder-loader-wrap">
+            <div class="loader">
+              <span><span></span><span></span><span></span><span></span></span>
+              <div class="base">
+                <span></span>
+                <div class="face"></div>
+              </div>
+            </div>
+            <div class="longfazers">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="loader-status-group">
+            <span class="loader-badge">⚡ PROCESSING TRANSMISSION</span>
+            <h3 class="loader-title" id="global-loader-title">${title || 'Dispatching Brief...'}</h3>
+            <p class="loader-sub" id="global-loader-sub">${sub || 'Connecting with ZAMZY Lead Architect in Hitech City'}</p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(loader);
+    } else {
+      const titleEl = document.getElementById('global-loader-title');
+      const subEl = document.getElementById('global-loader-sub');
+      if (titleEl) titleEl.textContent = title || 'Dispatching Brief...';
+      if (subEl) subEl.textContent = sub || 'Connecting with ZAMZY Lead Architect in Hitech City';
+    }
+
+    loader.classList.add('open');
+    loader.setAttribute('aria-hidden', 'false');
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        loader.classList.remove('open');
+        loader.setAttribute('aria-hidden', 'true');
+        resolve();
+      }, durationMs);
+    });
+  };
+
+  /* ═══════════════════════════════════════════════
      8. SIMPLIFIED PROJECT INTAKE FORM (With Language & Budget)
   ═══════════════════════════════════════════════ */
   const intakeForm = document.getElementById('project-intake-form');
@@ -474,6 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const budget = document.getElementById('client-budget').value;
       const projectType = document.getElementById('client-type').value;
       const reqs = document.getElementById('client-reqs').value;
+
+      await window.showGlobalFormLoader("Dispatching Brief...", "Encrypting submission & connecting with Lead Architect", 1600);
 
       try {
         const formData = new FormData();
@@ -492,14 +549,151 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
 
-        showToast(data.message || `Brief received! Technical lead will WhatsApp you at ${phone} in ${lang}.`);
         intakeForm.reset();
+        showSuperThankYouModal(name, phone);
       } catch (err) {
-        showToast(`Brief received, ${name}! Technical lead will WhatsApp you at ${phone} in ${lang}.`);
         intakeForm.reset();
+        showSuperThankYouModal(name, phone);
       }
     });
   }
+
+  /* Contact Page Form Handler */
+  const contactPageForm = document.getElementById('contact-page-form');
+  if (contactPageForm) {
+    contactPageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('contact-name').value;
+      const phone = document.getElementById('contact-phone').value;
+      const email = document.getElementById('contact-email').value;
+      const lang = document.getElementById('contact-lang') ? document.getElementById('contact-lang').value : 'English';
+      const budget = document.getElementById('contact-budget') ? document.getElementById('contact-budget').value : 'Standard Scope';
+      const projectType = document.getElementById('contact-type') ? document.getElementById('contact-type').value : 'General Inquiry';
+      const reqs = document.getElementById('contact-reqs').value;
+
+      await window.showGlobalFormLoader("Dispatching Brief...", "Encrypting submission & connecting with Lead Architect", 1600);
+
+      try {
+        const formData = new FormData();
+        formData.append('action', 'submit_inquiry');
+        formData.append('name', name);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('preferred_language', lang);
+        formData.append('budget', budget);
+        formData.append('project_type', projectType);
+        formData.append('requirements', reqs);
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        contactPageForm.reset();
+        showSuperThankYouModal(name, phone);
+      } catch (err) {
+        contactPageForm.reset();
+        showSuperThankYouModal(name, phone);
+      }
+    });
+  }
+
+  /* Guild Application Form Handler (careers.php) */
+  const guildForm = document.getElementById('guild-application-form');
+  if (guildForm) {
+    guildForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('app-name').value;
+      const phone = document.getElementById('app-phone').value;
+      const email = document.getElementById('app-email').value;
+      const location = document.getElementById('app-location').value;
+      const skills = document.getElementById('app-skills').value;
+      const exp = document.getElementById('app-exp') ? document.getElementById('app-exp').value : 'College Student / Fresher';
+      const portfolio = document.getElementById('app-portfolio') ? document.getElementById('app-portfolio').value : '';
+      const notes = document.getElementById('app-notes') ? document.getElementById('app-notes').value : '';
+
+      await window.showGlobalFormLoader("Transmitting Application...", "Logging candidate profile & resume into ZAMZY database", 1600);
+
+      try {
+        const formData = new FormData();
+        formData.append('action', 'submit_application');
+        formData.append('full_name', name);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('location_college', location);
+        formData.append('primary_skills', skills);
+        formData.append('experience_level', exp);
+        formData.append('portfolio_url', portfolio);
+        formData.append('past_work_notes', notes);
+
+        const fileInput = document.getElementById('app-resume');
+        if (fileInput && fileInput.files[0]) {
+          formData.append('resume', fileInput.files[0]);
+        }
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        guildForm.reset();
+        showSuperThankYouModal(name, phone, `Thank you <strong>${escapeHtml(name)}</strong>! Your Guild application has been received. Our Lead Architect will review your resume and WhatsApp you at <strong>${escapeHtml(phone)}</strong>.`);
+      } catch (err) {
+        guildForm.reset();
+        showSuperThankYouModal(name, phone, `Thank you <strong>${escapeHtml(name)}</strong>! Your Guild application has been logged. Our Lead Architect will WhatsApp you at <strong>${escapeHtml(phone)}</strong> shortly.`);
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     SUPER THANK YOU POPUP ENGINE (AUTO CLOSE)
+  ═══════════════════════════════════════════════ */
+  window.showSuperThankYouModal = function (name, phone, customMsg) {
+    const modal = document.getElementById('thankyou-modal');
+    if (!modal) return;
+
+    const msgEl = document.getElementById('thankyou-msg');
+    const timerBar = document.getElementById('thankyou-timer-bar');
+    const countEl = document.getElementById('thankyou-countdown-num');
+    const closeBtn = document.getElementById('close-thankyou-btn');
+    const backdrop = document.getElementById('close-thankyou-backdrop');
+
+    if (msgEl) {
+      if (customMsg) {
+        msgEl.innerHTML = customMsg;
+      } else {
+        msgEl.innerHTML = `Thank you <strong>${escapeHtml(name || 'Partner')}</strong>! Our Lead Architect has received your details and will connect with you via WhatsApp at <strong>${escapeHtml(phone || 'your number')}</strong> shortly.`;
+      }
+    }
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+
+    let totalSeconds = 5;
+    let remainingMs = totalSeconds * 1000;
+    const intervalMs = 100;
+
+    if (timerBar) timerBar.style.width = '100%';
+    if (countEl) countEl.textContent = totalSeconds;
+
+    if (window._thankYouInterval) clearInterval(window._thankYouInterval);
+
+    window._thankYouInterval = setInterval(() => {
+      remainingMs -= intervalMs;
+      const pct = (remainingMs / (totalSeconds * 1000)) * 100;
+      if (timerBar) timerBar.style.width = `${Math.max(0, pct)}%`;
+      if (countEl) countEl.textContent = Math.ceil(remainingMs / 1000);
+
+      if (remainingMs <= 0) {
+        closeThankYouModal();
+      }
+    }, intervalMs);
+
+    function closeThankYouModal() {
+      if (window._thankYouInterval) clearInterval(window._thankYouInterval);
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (closeBtn) closeBtn.onclick = closeThankYouModal;
+    if (backdrop) backdrop.onclick = closeThankYouModal;
+  };
 
   /* ═══════════════════════════════════════════════
      9. PRESS KIT MODAL
