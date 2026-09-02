@@ -53,7 +53,7 @@ if ($pdo) {
                 <a href="chats.php" class="admin-nav__item"><span>💬</span> Chat Reports</a>
                 <a href="testimonials.php" class="admin-nav__item"><span>★</span> Reviews / Proof</a>
                 <a href="careers.php" class="admin-nav__item"><span>👥</span> Careers &amp; Guild</a>
-                <a href="../index.html" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
+                <a href="../" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
             </nav>
         </div>
 

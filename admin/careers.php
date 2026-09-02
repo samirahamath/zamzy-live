@@ -181,7 +181,7 @@ if ($pdo) {
                 <a href="chats.php" class="admin-nav__item"><span>💬</span> Chat Reports</a>
                 <a href="testimonials.php" class="admin-nav__item"><span>★</span> Reviews / Proof</a>
                 <a href="careers.php" class="admin-nav__item active"><span>👥</span> Careers &amp; Guild</a>
-                <a href="../index.html" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
+                <a href="../" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
             </nav>
         </div>
 
@@ -328,6 +328,11 @@ if ($pdo) {
                                                 🔗 [Portfolio / GitHub]
                                             </a><br>
                                         <?php endif; ?>
+                                        <?php if (!empty($app['resume_file'])): ?>
+                                            <a href="../<?= htmlspecialchars($app['resume_file']) ?>" target="_blank" class="badge" style="display:inline-block; margin:0.25rem 0; background:rgba(6,182,212,0.15); color:var(--cyan); border:1px solid rgba(6,182,212,0.4); text-decoration:none; padding:3px 7px;">
+                                                📄 View Resume
+                                            </a><br>
+                                        <?php endif; ?>
                                         <span style="color:var(--dim); font-size:0.7rem;"><?= nl2br(htmlspecialchars($app['past_work_notes'] ?? '—')) ?></span>
                                     </td>
                                     <td>
@@ -400,7 +405,7 @@ if ($pdo) {
                 <h2 style="font-family:var(--display); font-size:1.4rem; font-weight:700; color:var(--white);">
                     Manage Public Job Openings (careers.php)
                 </h2>
-                <a href="../careers.php" target="_blank" class="btn-admin btn-admin-outline btn-admin-sm">↗ View Careers Page</a>
+                <a href="../careers" target="_blank" class="btn-admin btn-admin-outline btn-admin-sm">↗ View Careers Page</a>
             </div>
 
             <!-- Add Job Card -->

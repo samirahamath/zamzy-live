@@ -173,19 +173,72 @@ switch ($action) {
         $portfolio_url = trim($_POST['portfolio_url'] ?? '');
         $past_work_notes = trim($_POST['past_work_notes'] ?? '');
         $job_id = !empty($_POST['job_id']) ? intval($_POST['job_id']) : null;
+        $resume_file = '';
 
         if (empty($full_name) || empty($phone) || empty($email) || empty($primary_skills) || empty($location_college)) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Please fill in Name, WhatsApp Phone, Email, Location/College, and Skills.'
+                'message' => 'Please fill in all required fields (Name, WhatsApp Phone, Email, Location/College, and Skills).'
+            ]);
+            exit;
+        }
+
+        // Handle Resume Upload (Mandatory)
+        if (isset($_FILES['resume']) && $_FILES['resume']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp = $_FILES['resume']['tmp_name'];
+            $fileName = $_FILES['resume']['name'];
+            $fileSize = $_FILES['resume']['size'];
+            $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            $allowedExts = ['pdf', 'doc', 'docx'];
+            if (!in_array($ext, $allowedExts)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Invalid file format. Resume must be a PDF, DOC, or DOCX document.'
+                ]);
+                exit;
+            }
+
+            if ($fileSize > 10 * 1024 * 1024) { // 10 MB limit
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'File too large. Resume must be under 10MB.'
+                ]);
+                exit;
+            }
+
+            $uploadDir = __DIR__ . '/uploads/resumes/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($fileName, PATHINFO_FILENAME));
+            $newFileName = 'resume_' . time() . '_' . substr(md5(uniqid()), 0, 6) . '_' . $safeName . '.' . $ext;
+            $destination = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($fileTmp, $destination)) {
+                $resume_file = 'uploads/resumes/' . $newFileName;
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to save resume file. Please try again.'
+                ]);
+                exit;
+            }
+        } elseif (!empty($_POST['resume_url'])) {
+            $resume_file = trim($_POST['resume_url']);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Resume is mandatory! Please upload your Resume file (PDF/DOCX).'
             ]);
             exit;
         }
 
         try {
             $stmt = $pdo->prepare("INSERT INTO `zamzy_careers_applications` 
-                (`job_id`, `full_name`, `email`, `phone`, `location_college`, `primary_skills`, `experience_level`, `availability_hours`, `expected_payout`, `portfolio_url`, `past_work_notes`, `status`) 
-                VALUES (:job_id, :full_name, :email, :phone, :location_college, :primary_skills, :experience_level, :availability_hours, :expected_payout, :portfolio_url, :past_work_notes, 'new')");
+                (`job_id`, `full_name`, `email`, `phone`, `location_college`, `primary_skills`, `experience_level`, `availability_hours`, `expected_payout`, `portfolio_url`, `resume_file`, `past_work_notes`, `status`) 
+                VALUES (:job_id, :full_name, :email, :phone, :location_college, :primary_skills, :experience_level, :availability_hours, :expected_payout, :portfolio_url, :resume_file, :past_work_notes, 'new')");
             
             $stmt->execute([
                 ':job_id' => $job_id,
@@ -198,12 +251,13 @@ switch ($action) {
                 ':availability_hours' => $availability_hours,
                 ':expected_payout' => $expected_payout,
                 ':portfolio_url' => $portfolio_url,
+                ':resume_file' => $resume_file,
                 ':past_work_notes' => $past_work_notes
             ]);
 
             echo json_encode([
                 'success' => true,
-                'message' => 'Welcome to the ZAMZY Developer Guild! Your profile has been recorded. Our team will WhatsApp you at ' . htmlspecialchars($phone) . ' for matching client project milestones and commission payouts!'
+                'message' => 'Welcome to the ZAMZY Developer Guild, ' . htmlspecialchars($full_name) . '! Your portfolio & resume have been verified. Our technical team will WhatsApp you at ' . htmlspecialchars($phone) . ' for matching client project sprints!'
             ]);
         } catch (PDOException $e) {
             echo json_encode([

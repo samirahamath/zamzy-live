@@ -202,11 +202,19 @@ function initTables($pdo) {
         `availability_hours` VARCHAR(50) DEFAULT '15-20 hrs/week',
         `expected_payout` VARCHAR(100) DEFAULT 'Project Commission',
         `portfolio_url` VARCHAR(255) NULL,
+        `resume_file` VARCHAR(255) NULL,
         `past_work_notes` TEXT NULL,
         `status` ENUM('new', 'shortlisted', 'assigned_project', 'active_guild', 'rejected') DEFAULT 'new',
         `internal_notes` TEXT NULL,
         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // Check if resume_file column exists in zamzy_careers_applications
+    try {
+        $pdo->query("SELECT `resume_file` FROM `zamzy_careers_applications` LIMIT 1");
+    } catch (Exception $e) {
+        $pdo->exec("ALTER TABLE `zamzy_careers_applications` ADD COLUMN `resume_file` VARCHAR(255) NULL AFTER `portfolio_url`");
+    }
 
     // Seed default jobs if empty
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM `zamzy_careers_jobs`");

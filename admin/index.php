@@ -63,13 +63,17 @@ if ($pdo) {
                 <a href="chats.php" class="admin-nav__item"><span>💬</span> Chat Reports</a>
                 <a href="testimonials.php" class="admin-nav__item"><span>★</span> Reviews / Proof (<?= $totalReviews ?>)</a>
                 <a href="careers.php" class="admin-nav__item"><span>👥</span> Careers &amp; Guild</a>
-                <a href="../index.html" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
+                <a href="../" target="_blank" class="admin-nav__item"><span>↗</span> View Live Site</a>
             </nav>
         </div>
 
-        <div class="admin-sidebar__footer">
-            <div class="admin-user-pill">
-                <span class="dot">●</span> <?= htmlspecialchars($_SESSION['zamzy_admin_name'] ?? 'Administrator') ?>
+        <div>
+            <div class="admin-user-badge">
+                <div class="admin-avatar">A</div>
+                <div>
+                    <div style="font-weight:600;"><?= htmlspecialchars($_SESSION['admin_user'] ?? 'Admin') ?></div>
+                    <div style="font-size:0.75rem; color:var(--admin-dim);">Root Administrator</div>
+                </div>
             </div>
             <a href="logout.php" class="btn-admin btn-admin-outline btn-admin-sm" style="width:100%; text-align:center;">Terminate Session</a>
         </div>
@@ -83,7 +87,7 @@ if ($pdo) {
                 <p class="admin-page-sub">Headquarters Operations &amp; Inbound Project Intake</p>
             </div>
             <div class="admin-topbar__actions">
-                <a href="../index.php" target="_blank" class="btn-admin btn-admin-outline">
+                <a href="../" target="_blank" class="btn-admin btn-admin-outline">
                     <span>↗</span> View Live Site
                 </a>
             </div>

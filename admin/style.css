@@ -3,7 +3,9 @@
   Dark Cosmic Void Theme (#050505) + Neon Cyan & Violet Glassmorphism
 */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -13,13 +15,13 @@
   --void: #050505;
   --void-elevated: #0d0d16;
   --void-card: rgba(255, 255, 255, 0.035);
-  
+
   --violet: #8b5cf6;
   --cyan: #06b6d4;
   --white: #ffffff;
   --dim: rgba(255, 255, 255, 0.8);
   --faint: rgba(255, 255, 255, 0.45);
-  
+
   --rule: 1px solid rgba(255, 255, 255, 0.1);
   --rule-bright: 1px solid rgba(6, 182, 212, 0.4);
 
@@ -342,8 +344,15 @@ a {
 }
 
 @keyframes pulsePartial {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-  50% { box-shadow: 0 0 0 5px rgba(249, 115, 22, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0);
+  }
 }
 
 /* Buttons */
@@ -355,7 +364,7 @@ a {
   text-transform: uppercase;
   padding: 0.75rem 1.4rem;
   border: 1px solid var(--cyan);
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  background: linear-gradient(135deg, var(--white), var(--black));
   color: var(--white);
   display: inline-flex;
   align-items: center;
@@ -367,7 +376,7 @@ a {
 }
 
 .btn-admin:hover {
-  box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
 }
 
@@ -489,9 +498,11 @@ a {
   :root {
     --sidebar-w: 0px;
   }
+
   .admin-sidebar {
     display: none;
   }
+
   .admin-main {
     margin-left: 0;
     padding: 2rem 1.5rem;

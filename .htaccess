@@ -2,22 +2,36 @@
 RewriteEngine On
 RewriteBase /zz/
 
-# Redirect trailing slashes if not a folder
+# 1. Strip index.php or index.html from URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /zz/index\.(php|html) [NC]
+RewriteRule ^index\.(php|html)$ /zz/ [R=301,L]
+
+# 2. Redirect direct requests for *.php (excluding api.php and admin) to clean extensionless URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /zz/([^.\ ]+)\.php [NC]
+RewriteCond %{REQUEST_URI} !^/zz/api\.php [NC]
+RewriteCond %{REQUEST_URI} !^/zz/admin/ [NC]
+RewriteRule ^([^.]+)\.php$ $1 [R=301,L]
+
+# 3. Redirect direct requests for *.html to clean extensionless URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /zz/([^.\ ]+)\.html [NC]
+RewriteRule ^([^.]+)\.html$ $1 [R=301,L]
+
+# 4. Redirect trailing slashes if not a directory
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.+)/$ $1 [R=301,L]
 
-# Clean admin routing
+# 5. Clean admin routing
 RewriteRule ^admin/?$ admin/index.php [L]
 RewriteRule ^admin/login/?$ admin/login.php [L]
 
-# Resolve clean extensionless files (.php then .html)
+# 6. Internally resolve clean extensionless URLs (.php then .html)
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^([^/]+)$ $1.php [L]
 
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^([^/]+)$ $1.html [L]
 
-# Custom Error Pages if needed
-ErrorDocument 404 /zz/index.html
+# Custom Error Pages
+ErrorDocument 404 /zz/index.php

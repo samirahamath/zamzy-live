@@ -202,17 +202,17 @@ if ($pdo) {
 
   <!-- Navigation Bar -->
   <nav class="nav">
-    <a href="index.html" class="brand-logo-wrap">
+    <a href="./" class="brand-logo-wrap">
       <img src="images/logo.png" alt="ZAMZY" class="brand-logo-img" />
     </a>
     <ul class="nav-links">
-      <li><a href="index.html#about">Studio</a></li>
-      <li><a href="index.html#launchpad">Launchpad</a></li>
-      <li><a href="index.html#products">Products</a></li>
-      <li><a href="index.html#services">Services</a></li>
-      <li><a href="index.html#rates">Rates</a></li>
-      <li><a href="careers.php" style="color:var(--cyan);">Careers &amp; Guild</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="./#about">Studio</a></li>
+      <li><a href="./#launchpad">Launchpad</a></li>
+      <li><a href="./#products">Products</a></li>
+      <li><a href="./#services">Services</a></li>
+      <li><a href="./#rates">Rates</a></li>
+      <li><a href="careers" style="color:var(--cyan);">Careers &amp; Guild</a></li>
+      <li><a href="./#contact">Contact</a></li>
     </ul>
     <button class="menu-toggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -221,12 +221,12 @@ if ($pdo) {
 
   <!-- Mobile Drawer Menu -->
   <div class="mobile-menu">
-    <a href="index.html#hero">Hero</a>
-    <a href="index.html#about">Studio</a>
-    <a href="index.html#products">Products</a>
-    <a href="index.html#services">Services</a>
-    <a href="careers.php">Careers &amp; Guild</a>
-    <a href="index.html#contact">Contact</a>
+    <a href="./#hero">Hero</a>
+    <a href="./#about">Studio</a>
+    <a href="./#products">Products</a>
+    <a href="./#services">Services</a>
+    <a href="careers">Careers &amp; Guild</a>
+    <a href="./#contact">Contact</a>
   </div>
 
   <!-- ═══════════════════════════════════════════════
@@ -238,9 +238,21 @@ if ($pdo) {
     <p class="careers-hero__desc">
       Join the ZAMZY Developer Guild. Open to college students, freelance coders, UI/UX designers, and campus networkers across Chennai and remote. We match you with paid client projects and high revenue commissions.
     </p>
-    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-      <a href="#apply-guild" class="btn">Join Developer Guild ↓</a>
-      <a href="#open-roles" class="btn btn-outline">Explore Current Openings ↓</a>
+    <!-- Trust Badges / Capability Pills (Like Reference) -->
+    <div class="hero-pills-row" style="margin-bottom:1.5rem;">
+      <span class="hero-trust-pill"><span class="pill-icon">🛡</span> 10–25% Deal Commissions</span>
+      <span class="hero-trust-pill"><span class="pill-icon">⚡</span> Direct Milestone Payouts</span>
+      <span class="hero-trust-pill"><span class="pill-icon">💻</span> Production Enterprise Repos</span>
+      <span class="hero-trust-pill"><span class="pill-icon">📈</span> Senior Architect Code Reviews</span>
+    </div>
+
+    <div class="hero-cta-group" style="margin-top:0;">
+      <a href="#open-roles" class="hero-cta-btn hero-cta-btn--services">
+        <span>🚀 View Active Projects &amp; Sprints ↓</span>
+      </a>
+      <a href="#apply-guild" class="hero-cta-btn hero-cta-btn--talk">
+        <span>💼 Apply for Guild &amp; Upload Resume ↓</span>
+      </a>
     </div>
   </header>
 
@@ -251,7 +263,7 @@ if ($pdo) {
     <div class="guild-perk-card">
       <span class="guild-perk-num">01 / COMMISSIONS</span>
       <h3 class="guild-perk-title">Direct Milestone Payouts</h3>
-      <p class="guild-perk-desc">Earn ₹10,000 to ₹60,000+ per module or 10%–20% deal commissions for client acquisition. Zero delayed billing.</p>
+      <p class="guild-perk-desc">Earn ₹10,000 to ₹60,000+ per module or 10%–25% deal commissions for client acquisition. Zero delayed billing.</p>
     </div>
 
     <div class="guild-perk-card">
@@ -269,21 +281,21 @@ if ($pdo) {
     <div class="guild-perk-card">
       <span class="guild-perk-num">04 / FLEXIBLE SCHEDULE</span>
       <h3 class="guild-perk-title">College &amp; Remote Friendly</h3>
-      <p class="guild-perk-desc">Take on assignments according to your semester schedule (10 to 25 hrs/week). Work from anywhere or our Anna Nagar Workshop.</p>
+      <p class="guild-perk-desc">Take on assignments according to your semester schedule (10 to 25 hrs/week). Work from anywhere or our engineering hub.</p>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════
-       CURRENT ACTIVE OPENINGS
+       CURRENT ACTIVE OPENINGS & CLIENT PROJECTS
   ═══════════════════════════════════════════════ -->
   <section class="jobs-section" id="open-roles">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1.2rem;">
       <div>
-        <span class="badge">Open Roles &amp; Opportunities</span>
+        <span class="badge">Open Roles &amp; Active Client Sprints</span>
         <h2 class="section-title" style="margin-top:0.6rem;">Current Engineering Openings</h2>
       </div>
-      <p style="font-family:var(--mono); font-size:0.78rem; color:var(--dim); max-width:40ch;">
-        Apply for specific project roles below or submit your general profile to join the freelance talent network.
+      <p style="font-family:var(--mono); font-size:0.78rem; color:var(--dim); max-width:44ch;">
+        Apply directly for an active client project sprint below or submit your talent profile &amp; resume to join the freelance network.
       </p>
     </div>
 
@@ -310,7 +322,7 @@ if ($pdo) {
             <button type="button" class="btn btn-sm apply-role-btn" 
               data-id="<?= $job['id'] ?>" 
               data-title="<?= htmlspecialchars($job['title'], ENT_QUOTES) ?>">
-              Apply For Role →
+              Apply For Project →
             </button>
           </div>
         </div>
@@ -325,60 +337,59 @@ if ($pdo) {
     <div style="max-width:900px; margin:0 auto;">
       
       <div class="intake-form-wrap" style="padding:3rem 2.5rem;">
-        <span class="badge">Join Developer Network</span>
+        <span class="badge">Developer &amp; Creator Intake</span>
         <h2 class="intake-form-title" style="margin-top:0.6rem; font-size:2rem;">Join the ZAMZY Engineering Guild</h2>
         <p class="intake-form-sub" style="margin-bottom:2rem;">
-          Tell us what you know, your college/location, and your skillsets. We assign you client modules and share project commissions directly with you.
+          Tell us your skills, college/location, and upload your resume. We assign you active client modules and disburse project commissions directly to you.
         </p>
 
-        <form id="guild-application-form">
+        <form id="guild-application-form" enctype="multipart/form-data">
           <input type="hidden" name="job_id" id="app-job-id" value="" />
 
           <div class="form-grid">
             
             <!-- 1. Full Name -->
             <div class="form-group">
-              <label class="form-label">Full Name <span class="req">*</span></label>
+              <label class="form-label" for="app-name">Full Name <span class="req">*</span></label>
               <input type="text" id="app-name" class="form-input" placeholder="e.g. Vignesh Sundaram" required />
             </div>
 
             <!-- 2. WhatsApp Number -->
             <div class="form-group">
-              <label class="form-label">WhatsApp Number <span class="req">*</span></label>
+              <label class="form-label" for="app-phone">WhatsApp Number <span class="req">*</span></label>
               <input type="tel" id="app-phone" class="form-input" placeholder="+91 98765 43210" required />
             </div>
 
             <!-- 3. Email Address -->
             <div class="form-group">
-              <label class="form-label">Email Address <span class="req">*</span></label>
+              <label class="form-label" for="app-email">Email Address <span class="req">*</span></label>
               <input type="email" id="app-email" class="form-input" placeholder="vignesh@gmail.com" required />
             </div>
 
             <!-- 4. Location / College Name -->
             <div class="form-group">
-              <label class="form-label">Location / College Name <span class="req">*</span></label>
-              <input type="text" id="app-location" class="form-input" placeholder="e.g. Anna University, Chennai / SRM / Coimbatore" required />
+              <label class="form-label" for="app-location">Location / College Name <span class="req">*</span></label>
+              <input type="text" id="app-location" class="form-input" placeholder="e.g. Anna University, Chennai / JNTU, Hyderabad" required />
             </div>
 
-            <!-- 5. Primary Skillset -->
+            <!-- 5. Primary Skillset / Target Project -->
             <div class="form-group full-width">
-              <label class="form-label">What Technologies / Skills Do You Know? <span class="req">*</span></label>
-              <input list="skills-suggestions" type="text" id="app-skills" class="form-input" placeholder="e.g. Flutter, React, Next.js, Node.js, Python, PostgreSQL, UI/UX, Sales" required />
+              <label class="form-label" for="app-skills">Target Project / Skillsets <span class="req">*</span></label>
+              <input list="skills-suggestions" type="text" id="app-skills" class="form-input" placeholder="e.g. Flutter & Dart, React & Next.js, Node.js, Python AI, Figma UI/UX, Deals" required />
               <datalist id="skills-suggestions">
-                <option value="Flutter & Dart Mobile Development">
-                <option value="React, Next.js & TypeScript Frontend">
-                <option value="Node.js, Express & REST API Backend">
+                <option value="Flutter & Mobile App Engineer">
+                <option value="Full-Stack React & Node.js Developer">
+                <option value="UI/UX Product Designer">
+                <option value="Campus Tech Ambassador & Project Scout">
                 <option value="Python, FastAPI & AI Automation">
-                <option value="Figma & UI/UX Product Design">
                 <option value="PHP, Laravel & MySQL ERPs">
                 <option value="AWS, Docker & DevOps Cloud">
-                <option value="Campus Tech Ambassador & Client Deals">
               </datalist>
             </div>
 
             <!-- 6. Experience Level -->
             <div class="form-group">
-              <label class="form-label">Experience Level</label>
+              <label class="form-label" for="app-exp">Experience Level</label>
               <input list="exp-list" type="text" id="app-exp" class="form-input" placeholder="e.g. College Student / 2nd Year" value="College Student / Fresher" />
               <datalist id="exp-list">
                 <option value="College Student (1st - 4th Year)">
@@ -390,7 +401,7 @@ if ($pdo) {
 
             <!-- 7. Weekly Availability -->
             <div class="form-group">
-              <label class="form-label">Weekly Availability</label>
+              <label class="form-label" for="app-avail">Weekly Availability</label>
               <input list="avail-list" type="text" id="app-avail" class="form-input" placeholder="e.g. 15-20 hrs/week" value="15-20 hrs/week" />
               <datalist id="avail-list">
                 <option value="10-15 hrs/week (Part-Time / College)">
@@ -402,36 +413,42 @@ if ($pdo) {
 
             <!-- 8. Expected Payout / Commission Model -->
             <div class="form-group">
-              <label class="form-label">Preferred Payout Model</label>
+              <label class="form-label" for="app-payout">Preferred Payout Model</label>
               <input list="payout-list" type="text" id="app-payout" class="form-input" placeholder="e.g. Per Project Milestone" value="Per Project Milestone" />
               <datalist id="payout-list">
-                <option value="Per Project Milestone (₹15k - ₹40k)">
+                <option value="Per Project Milestone (₹15k - ₹60k)">
                 <option value="Per Screen / Hourly UI Rate">
-                <option value="Deal Commission (10% - 20% of Project)">
-                <option value="Monthly Stipend / Retainer">
+                <option value="Deal Commission (10% - 25% of Project)">
+                <option value="Monthly Retainer">
               </datalist>
             </div>
 
-            <!-- 9. Portfolio / GitHub / LinkedIn URL -->
+            <!-- 9. Portfolio / GitHub Link -->
             <div class="form-group">
-              <label class="form-label">GitHub / Portfolio / LinkedIn Link</label>
-              <input type="url" id="app-portfolio" class="form-input" placeholder="https://github.com/yourhandle" />
+              <label class="form-label" for="app-portfolio">GitHub / Portfolio Link</label>
+              <input type="url" id="app-portfolio" class="form-input" placeholder="https://github.com/yourhandle or portfolio URL" />
             </div>
 
-            <!-- 10. Past Projects / What can you build -->
+            <!-- 10. Resume / CV Upload (Mandatory) -->
+            <div class="form-group">
+              <label class="form-label" for="app-resume">Upload Resume / CV <span class="req">* (Mandatory: PDF/DOCX up to 10MB)</span></label>
+              <input type="file" id="app-resume" name="resume" class="form-input" accept=".pdf,.doc,.docx" required style="padding:0.6rem; cursor:pointer;" />
+            </div>
+
+            <!-- 11. Past Projects / What can you build -->
             <div class="form-group full-width">
-              <label class="form-label">What Have You Built? (Past Projects, Tools, or Ideas)</label>
-              <textarea id="app-notes" class="form-textarea" placeholder="Tell us about any projects you built in college, hackathons, previous freelance work, or what you're excited to work on..."></textarea>
+              <label class="form-label" for="app-notes">What Have You Built? (Past Projects, Tools, or Ideas)</label>
+              <textarea id="app-notes" class="form-textarea" placeholder="Tell us about any apps or projects you built in college, hackathons, freelance work, or what you're excited to code..."></textarea>
             </div>
 
           </div>
 
           <p class="form-disclaimer">
-            By joining, your developer profile enters our active project matching pool. You will be contacted via WhatsApp when a relevant client sprint or module is ready.
+            By submitting, your resume and developer profile enter our active project matching pool. You will be contacted directly via WhatsApp when a matching client sprint or paid milestone is ready.
           </p>
 
-          <button type="submit" class="btn" style="width:100%; padding:1.2rem;">
-            Submit Talent Profile &amp; Join Guild →
+          <button type="submit" id="guild-submit-btn" class="btn" style="width:100%; padding:1.2rem;">
+            Submit Talent Profile &amp; Resume →
           </button>
         </form>
 
@@ -446,16 +463,16 @@ if ($pdo) {
       <div class="footer-logo">
         <img src="images/logo.png" alt="ZAMZY" class="brand-logo-img" style="height:32px; margin-bottom:0.35rem;" />
       </div>
-      <span class="footer-tagline">ZAMZY.IN — Engineering Digital Products That Scale · Anna Nagar, Chennai</span>
+      <span class="footer-tagline">ZAMZY.IN — Engineering Digital Products That Scale · Hitech City, Hyderabad &amp; Anna Nagar, Chennai</span>
       <span class="footer-copy">© 2026 ZAMZY. Registered Digital Engineering Agency. All rights reserved.</span>
     </div>
 
     <div class="footer-bar__right">
-      <a href="index.html" class="footer-link">Home</a>
-      <a href="index.html#products" class="footer-link">Products</a>
-      <a href="index.html#services" class="footer-link">Services</a>
-      <a href="careers.php" class="footer-link">Careers</a>
-      <a href="index.html#contact" class="footer-link">Contact</a>
+      <a href="./" class="footer-link">Home</a>
+      <a href="./#products" class="footer-link">Products</a>
+      <a href="./#services" class="footer-link">Services</a>
+      <a href="careers" class="footer-link">Careers</a>
+      <a href="./#contact" class="footer-link">Contact</a>
     </div>
   </footer>
 
@@ -487,7 +504,7 @@ if ($pdo) {
         const applySec = document.getElementById('apply-guild');
         if (applySec) {
           applySec.scrollIntoView({ behavior: 'smooth' });
-          showToast(`Applying for: ${jobTitle}. Fill your details below.`);
+          showToast(`Selected: ${jobTitle}. Upload your Resume and submit below.`);
         }
       });
     });
@@ -497,6 +514,7 @@ if ($pdo) {
     if (appForm) {
       appForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = document.getElementById('guild-submit-btn');
         const name = document.getElementById('app-name').value;
         const phone = document.getElementById('app-phone').value;
         const email = document.getElementById('app-email').value;
@@ -508,8 +526,22 @@ if ($pdo) {
         const portfolio = document.getElementById('app-portfolio').value;
         const notes = document.getElementById('app-notes').value;
         const jobId = document.getElementById('app-job-id').value;
+        const resumeInput = document.getElementById('app-resume');
+
+        if (!resumeInput.files || resumeInput.files.length === 0) {
+          showToast('Please upload your Resume (PDF/DOCX). It is mandatory!');
+          resumeInput.focus();
+          return;
+        }
+
+        const resumeFile = resumeInput.files[0];
 
         try {
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading Resume & Recording Profile...';
+          }
+
           const formData = new FormData();
           formData.append('action', 'submit_application');
           formData.append('full_name', name);
@@ -521,6 +553,7 @@ if ($pdo) {
           formData.append('availability_hours', avail);
           formData.append('expected_payout', payout);
           formData.append('portfolio_url', portfolio);
+          formData.append('resume', resumeFile);
           formData.append('past_work_notes', notes);
           if (jobId) formData.append('job_id', jobId);
 
@@ -529,11 +562,20 @@ if ($pdo) {
             body: formData
           });
           const data = await res.json();
-          showToast(data.message || `Welcome to ZAMZY Guild, ${name}! We will WhatsApp you at ${phone}.`);
-          appForm.reset();
+          if (data.success) {
+            showToast(data.message || `Welcome to ZAMZY Guild, ${name}! We will WhatsApp you at ${phone}.`);
+            appForm.reset();
+          } else {
+            showToast(data.message || 'Error uploading application. Please check your details.');
+          }
         } catch (err) {
           showToast(`Welcome to ZAMZY Guild, ${name}! Profile recorded. We will WhatsApp you at ${phone}.`);
           appForm.reset();
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Talent Profile & Resume →';
+          }
         }
       });
     }
@@ -800,6 +842,23 @@ if ($pdo) {
     initChatView();
   })();
   </script>
+
+  <!-- Fixed Mobile Quick-Action Dock -->
+  <div class="mobile-action-dock" id="mobile-action-dock" role="navigation" aria-label="Quick Actions">
+    <a href="./#services" class="dock-btn dock-btn--services" aria-label="Explore Services">
+      <span class="dock-btn__icon">🛠</span>
+      <span class="dock-btn__label">Services</span>
+    </a>
+    <a href="./#contact" class="dock-btn dock-btn--talk" aria-label="Start a Project / Let's Talk">
+      <span class="dock-btn__icon">💬</span>
+      <span class="dock-btn__label">Let's Talk</span>
+    </a>
+    <a href="careers" class="dock-btn dock-btn--careers active" aria-label="Explore Careers & Guild">
+      <span class="dock-btn__icon">💼</span>
+      <span class="dock-btn__label">Careers</span>
+    </a>
+  </div>
+
 </body>
 </html>
 

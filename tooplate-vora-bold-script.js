@@ -174,14 +174,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    /* Zoom switch */
+    /* Zoom switch (Always on Zoom by default) */
     var zoomSwitch = document.getElementById('zoomSwitch');
     var ringTilt = document.querySelector('.ring-tilt');
+    if (ringTilt) {
+      ringTilt.style.setProperty('--zoom', '1.25');
+    }
     if (zoomSwitch && ringTilt) {
+      zoomSwitch.setAttribute('aria-checked', 'true');
       zoomSwitch.addEventListener('click', function () {
         var on = zoomSwitch.getAttribute('aria-checked') !== 'true';
         zoomSwitch.setAttribute('aria-checked', on ? 'true' : 'false');
-        ringTilt.style.setProperty('--zoom', on ? '1.24' : '1');
+        ringTilt.style.setProperty('--zoom', on ? '1.25' : '1');
       });
     }
   }
@@ -257,21 +261,65 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ═══════════════════════════════════════════════
+     4b. PRICING CATEGORY TABS (TECH vs MARKETING)
+  ═══════════════════════════════════════════════ */
+  const pricingTabs = document.querySelectorAll('.pricing-tab');
+  const ratesPanels = document.querySelectorAll('.rates-panel');
+
+  pricingTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.target;
+      pricingTabs.forEach((t) => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      ratesPanels.forEach((panel) => {
+        panel.classList.remove('active');
+        panel.style.display = 'none';
+      });
+
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      const activePanel = document.getElementById(targetId);
+      if (activePanel) {
+        activePanel.style.display = 'block';
+        // Trigger reflow for CSS animation
+        void activePanel.offsetWidth;
+        activePanel.classList.add('active');
+      }
+    });
+  });
+
+  /* ═══════════════════════════════════════════════
      5. SELECT TIER TO INTAKE FORM
   ═══════════════════════════════════════════════ */
   const tierButtons = document.querySelectorAll('.select-tier-btn');
   const tierBudgetSelect = document.getElementById('client-budget');
+  const tierTypeSelect = document.getElementById('client-type');
 
   tierButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const selectedTier = btn.dataset.tier;
+      const selectedTier = btn.dataset.tier || '';
       if (tierBudgetSelect) {
         if (selectedTier.includes('10,000')) {
           tierBudgetSelect.value = '₹10,000 – ₹25,000 (MVP / Prototype)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Custom SaaS Platform';
         } else if (selectedTier.includes('25,000')) {
           tierBudgetSelect.value = '₹25,000 – ₹75,000 (Custom Web & App)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Custom SaaS Platform';
         } else if (selectedTier.includes('75,000')) {
           tierBudgetSelect.value = '₹75,000 – ₹2,00,000 (Enterprise SaaS)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Custom SaaS Platform';
+        } else if (selectedTier.includes('5,000')) {
+          tierBudgetSelect.value = '₹5,000 – ₹15,000/mo (Starter Marketing & Local SEO)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Digital Marketing & Growth Campaigns';
+        } else if (selectedTier.includes('15,000')) {
+          tierBudgetSelect.value = '₹15,000 – ₹35,000/mo (Performance Ads & Scaling)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Performance Ads & Google Search / Meta';
+        } else if (selectedTier.includes('35,000')) {
+          tierBudgetSelect.value = '₹35,000+/mo (Enterprise Growth Retainer)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Digital Marketing & Growth Campaigns';
         }
       }
       const contactSection = document.getElementById('contact');
