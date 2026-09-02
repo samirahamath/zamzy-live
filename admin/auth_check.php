@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function checkAdminAuth() {
     if (!isset($_SESSION['zamzy_admin_logged']) || $_SESSION['zamzy_admin_logged'] !== true) {
-        header('Location: login.php');
+        $loginUrl = (strpos($_SERVER['REQUEST_URI'] ?? '', '/zz/') !== false) ? '/zz/admin/login.php' : '/admin/login.php';
+        header('Location: ' . $loginUrl);
         exit;
     }
 }

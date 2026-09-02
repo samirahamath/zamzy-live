@@ -33,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['zamzy_admin_username'] = $user['username'];
                 $_SESSION['zamzy_admin_role'] = $user['role'];
 
-                header('Location: index.php');
+                $dashUrl = (strpos($_SERVER['REQUEST_URI'] ?? '', '/zz/') !== false) ? '/zz/admin/index.php' : '/admin/index.php';
+                header('Location: ' . $dashUrl);
                 exit;
             } else {
                 $error = 'Invalid username or password credentials.';
