@@ -93,7 +93,14 @@ $pdo = getDbConnection();
 
     @media (max-width: 992px) {
       .contact-grid-container {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+      }
+      .contact-form-wrapper {
+        order: 1;
+      }
+      .contact-info-cards {
+        order: 2;
       }
     }
 
