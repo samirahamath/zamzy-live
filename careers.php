@@ -220,16 +220,17 @@ if ($pdo) {
 
   <!-- Navigation Bar -->
   <nav class="nav">
-    <a href="./" class="brand-logo-wrap">
+    <a href="index.html#hero" class="brand-logo-wrap">
       <img src="images/logo.png" alt="ZAMZY" class="brand-logo-img" />
     </a>
     <ul class="nav-links">
-      <li><a href="./#about">Studio</a></li>
-      <li><a href="./#launchpad">Launchpad</a></li>
-      <li><a href="./#products">Products</a></li>
-      <li><a href="./#services">Services</a></li>
-      <li><a href="./#rates">Rates</a></li>
-      <li><a href="careers" style="color:var(--cyan);">Careers &amp; Guild</a></li>
+      <li><a href="index.html#about">Studio</a></li>
+      <li><a href="index.html#launchpad">Launchpad</a></li>
+      <li><a href="index.html#products">Products</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#testimonials">Reviews</a></li>
+      <li><a href="index.html#rates">Rates</a></li>
+      <li><a href="careers" class="active" style="color:var(--cyan);">Careers</a></li>
       <li><a href="contact.php">Contact</a></li>
     </ul>
     <button class="menu-toggle" aria-label="Open menu" aria-expanded="false">
@@ -239,11 +240,14 @@ if ($pdo) {
 
   <!-- Mobile Drawer Menu -->
   <div class="mobile-menu">
-    <a href="./#hero">Hero</a>
-    <a href="./#about">Studio</a>
-    <a href="./#products">Products</a>
-    <a href="./#services">Services</a>
-    <a href="careers">Careers &amp; Guild</a>
+    <a href="index.html#hero">Hero</a>
+    <a href="index.html#about">Studio</a>
+    <a href="index.html#launchpad">Launchpad</a>
+    <a href="index.html#products">Products</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#testimonials">Reviews</a>
+    <a href="index.html#rates">Rates</a>
+    <a href="careers" style="color:var(--cyan);">Careers &amp; Guild</a>
     <a href="contact.php">Contact</a>
   </div>
 

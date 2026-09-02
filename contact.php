@@ -439,8 +439,11 @@ $pdo = getDbConnection();
             🔒 By submitting this form, your brief is logged in the ZAMZY database. 100% confidential. Zero spam.
           </p>
 
-          <button type="submit" class="btn" style="width:100%; padding:1.2rem;">
-            Submit Brief &amp; Get Free Scope →
+          <button type="submit" class="fancy" id="contact-submit-btn" style="width: 100%; margin-top: 1rem;">
+            <span class="top-key"></span>
+            <span class="text">Submit Brief &amp; Get Free Scope →</span>
+            <span class="bottom-key-1"></span>
+            <span class="bottom-key-2"></span>
           </button>
         </form>
 
