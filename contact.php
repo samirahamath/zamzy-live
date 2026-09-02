@@ -4,44 +4,52 @@ $pdo = getDbConnection();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Contact Us — ZAMZY Digital Engineering | Hitech City, Hyderabad</title>
-  <meta name="description" content="Get in touch with ZAMZY Digital Engineering in Hitech City, Hyderabad. Submit your SaaS platform or mobile app brief for immediate technical review and 48-hour response." />
-  <meta name="keywords" content="Contact ZAMZY, Digital Engineering Agency Hyderabad, Custom SaaS Agency, Software Development Hitech City, ZAMZY Contact, Zamzy.in" />
+  <title>Contact ZAMZY — Technology, Digital Marketing &amp; Media Production Agency</title>
+  <meta name="description"
+    content="Get in touch with ZAMZY. We specialize in custom software development, high-converting digital marketing campaigns, and professional video editing &amp; media production." />
+  <meta name="keywords"
+    content="Contact ZAMZY, Digital Agency Hyderabad, Software Development, Custom Web Apps, Digital Marketing Agency, Video Editing Services, Meta Ads, SEO Agency, ZAMZY Contact, Zamzy.in" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://zamzy.in/contact.php" />
 
   <!-- Meta Pixel Code -->
   <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '1063958663209939');
-  fbq('track', 'PageView');
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ?
+          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1063958663209939');
+    fbq('track', 'PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=1063958663209939&ev=PageView&noscript=1"
-  /></noscript>
+      src="https://www.facebook.com/tr?id=1063958663209939&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://zamzy.in/contact.php" />
-  <meta property="og:title" content="Contact ZAMZY Digital Engineering — Hitech City, Hyderabad" />
-  <meta property="og:description" content="Submit your project brief to ZAMZY. Custom SaaS platforms, mobile apps, ERPs, and cloud architecture built for scale." />
+  <meta property="og:title" content="Contact ZAMZY — Tech, Digital Marketing &amp; Video Editing Agency" />
+  <meta property="og:description"
+    content="Submit your project brief to ZAMZY. We deliver custom software, performance marketing, SEO, and high-impact video editing." />
   <meta property="og:image" content="https://zamzy.in/images/logo.png" />
 
   <!-- Fonts & Core Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="tooplate-vora-bold-style.css" />
 
   <style>
@@ -51,6 +59,7 @@ $pdo = getDbConnection();
       position: relative;
       z-index: 2;
     }
+
     .contact-page-hero__eyebrow {
       font-family: var(--mono);
       font-size: 0.75rem;
@@ -59,6 +68,7 @@ $pdo = getDbConnection();
       text-transform: uppercase;
       margin-bottom: 0.8rem;
     }
+
     .contact-page-hero__title {
       font-family: var(--display);
       font-size: clamp(2.2rem, 5vw, 3.8rem);
@@ -68,6 +78,7 @@ $pdo = getDbConnection();
       max-width: 900px;
       margin: 0 auto 1.2rem auto;
     }
+
     .contact-page-hero__desc {
       font-family: var(--mono);
       font-size: clamp(0.85rem, 1.3vw, 1rem);
@@ -96,9 +107,11 @@ $pdo = getDbConnection();
         display: flex;
         flex-direction: column;
       }
+
       .contact-form-wrapper {
         order: 1;
       }
+
       .contact-info-cards {
         order: 2;
       }
@@ -119,6 +132,7 @@ $pdo = getDbConnection();
       padding: 1.6rem 1.4rem;
       transition: var(--transition);
     }
+
     .contact-card-box:hover {
       border-color: rgba(6, 182, 212, 0.45);
       box-shadow: 0 0 25px rgba(6, 182, 212, 0.18);
@@ -131,6 +145,7 @@ $pdo = getDbConnection();
       gap: 12px;
       margin-bottom: 0.8rem;
     }
+
     .contact-card-icon {
       font-size: 1.4rem;
       width: 42px;
@@ -142,6 +157,7 @@ $pdo = getDbConnection();
       align-items: center;
       justify-content: center;
     }
+
     .contact-card-title {
       font-family: var(--display);
       font-size: 1.1rem;
@@ -155,6 +171,7 @@ $pdo = getDbConnection();
       color: var(--dim);
       line-height: 1.65;
     }
+
     .contact-card-link {
       color: var(--cyan);
       text-decoration: underline;
@@ -178,6 +195,7 @@ $pdo = getDbConnection();
       color: var(--white);
       margin-bottom: 0.4rem;
     }
+
     .contact-form-sub {
       font-family: var(--mono);
       font-size: 0.82rem;
@@ -192,18 +210,21 @@ $pdo = getDbConnection();
       max-width: 1200px;
       margin: 0 auto;
     }
+
     .faq-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 1.4rem;
       margin-top: 2rem;
     }
+
     .faq-card {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
       padding: 1.5rem;
     }
+
     .faq-q {
       font-family: var(--display);
       font-size: 1.05rem;
@@ -211,6 +232,7 @@ $pdo = getDbConnection();
       color: var(--white);
       margin-bottom: 0.6rem;
     }
+
     .faq-a {
       font-family: var(--mono);
       font-size: 0.82rem;
@@ -219,6 +241,7 @@ $pdo = getDbConnection();
     }
   </style>
 </head>
+
 <body>
 
   <!-- Ambient Cosmic Aura -->
@@ -259,10 +282,10 @@ $pdo = getDbConnection();
 
   <!-- Hero Section -->
   <header class="contact-page-hero">
-    <div class="contact-page-hero__eyebrow">GET IN TOUCH // HITECH CITY, HYDERABAD</div>
-    <h1 class="contact-page-hero__title">Contact ZAMZY Engineering</h1>
+    <div class="contact-page-hero__eyebrow">GET IN TOUCH // TECH • MARKETING • VIDEO EDITING</div>
+    <h1 class="contact-page-hero__title">Contact ZAMZY for 360° Growth</h1>
     <p class="contact-page-hero__desc">
-      Have a product brief, custom SaaS requirement, or technical question? Submit your project brief below for a 48-hour SLA response directly from our Lead Architect.
+      Looking for custom software development, ROI-driven digital marketing campaigns, or professional video &amp; media editing? Submit your project requirements below for a 24-hour response &amp; custom proposal.
     </p>
   </header>
 
@@ -273,16 +296,16 @@ $pdo = getDbConnection();
       <!-- Left Column: Direct Info Cards -->
       <div class="contact-info-cards">
 
-        <!-- Card 1: Office Location -->
+        <!-- Card 1: Creative & Tech Studio -->
         <div class="contact-card-box">
           <div class="contact-card-header">
             <div class="contact-card-icon">📍</div>
-            <div class="contact-card-title">Engineering Workshop</div>
+            <div class="contact-card-title">Tech &amp; Media Studio</div>
           </div>
           <div class="contact-card-text">
             <strong>ZAMZY DIGITAL SOLUTIONS</strong><br />
             Hitech City, Hyderabad, Telangana, India<br />
-            <span style="color:var(--faint); font-size:0.78rem;">Collaborative space for high-concurrency architecture, testing &amp; deployment.</span>
+            <span style="color:var(--faint); font-size:0.78rem;">Full-stack hub for software development, performance marketing, video editing &amp; branding.</span>
           </div>
         </div>
 
@@ -290,12 +313,13 @@ $pdo = getDbConnection();
         <div class="contact-card-box">
           <div class="contact-card-header">
             <div class="contact-card-icon">💬</div>
-            <div class="contact-card-title">WhatsApp &amp; Direct Phone</div>
+            <div class="contact-card-title">WhatsApp &amp; Direct Line</div>
           </div>
           <div class="contact-card-text">
-            Direct Lead Architect Line:<br />
-            <a href="https://wa.me/919876543210?text=Hi%20ZAMZY%20Engineering%2C%20I%20have%20a%20project%20query" target="_blank" class="contact-card-link">+91 98765 43210 (WhatsApp Chat)</a><br />
-            <span style="color:var(--faint); font-size:0.78rem;">Immediate sandbox credentials &amp; technical consultation.</span>
+            Direct Lead Consultant Line:<br />
+            <a href="https://wa.me/919876543210?text=Hi%20ZAMZY%2C%20I%20have%20a%20project%20query%20for%20Tech%2FMarketing%2FEditing"
+              target="_blank" class="contact-card-link">+91 98765 43210 (WhatsApp Chat)</a><br />
+            <span style="color:var(--faint); font-size:0.78rem;">Immediate strategy consultation &amp; sample portfolio showcase.</span>
           </div>
         </div>
 
@@ -306,9 +330,10 @@ $pdo = getDbConnection();
             <div class="contact-card-title">Email Inquiries</div>
           </div>
           <div class="contact-card-text">
-            Official Technical Inbox:<br />
-            <a href="mailto:contact@zamzy.in" class="contact-card-link">contact@zamzy.in</a> / <a href="mailto:hello@zamzy.in" class="contact-card-link">hello@zamzy.in</a><br />
-            <span style="color:var(--faint); font-size:0.78rem;">48-hour response SLA on all RFPs &amp; scope briefs.</span>
+            Official Inquiry Inbox:<br />
+            <a href="mailto:contact@zamzy.in" class="contact-card-link">contact@zamzy.in</a> / <a
+              href="mailto:hello@zamzy.in" class="contact-card-link">hello@zamzy.in</a><br />
+            <span style="color:var(--faint); font-size:0.78rem;">24-hour response SLA on all RFPs, marketing briefs &amp; editing scopes.</span>
           </div>
         </div>
 
@@ -316,12 +341,12 @@ $pdo = getDbConnection();
         <div class="contact-card-box">
           <div class="contact-card-header">
             <div class="contact-card-icon">🛡️</div>
-            <div class="contact-card-title">IP &amp; Confidentiality Guarantee</div>
+            <div class="contact-card-title">100% Client Quality Guarantee</div>
           </div>
           <div class="contact-card-text">
-            • <strong>100% IP Ownership:</strong> Full Git repository &amp; code transfer upon delivery.<br />
-            • <strong>Mutual NDAs:</strong> Executed prior to deep technical architecture reviews.<br />
-            • <strong>Operating Hours:</strong> Mon–Fri 09:00–18:00 IST (24/7 Incident Ops).
+            • <strong>100% IP &amp; Asset Ownership:</strong> Full source code, raw video files &amp; campaign ownership.<br />
+            • <strong>NDAs Available:</strong> Signed prior to reviewing confidential business concepts.<br />
+            • <strong>Operating Hours:</strong> Mon–Sat 09:00–19:00 IST.
           </div>
         </div>
 
@@ -329,8 +354,9 @@ $pdo = getDbConnection();
 
       <!-- Right Column: Interactive Intake Form -->
       <div class="contact-form-wrap">
-        <h2 class="contact-form-title">Submit Engineering Brief</h2>
-        <p class="contact-form-sub">Fill in your requirements for a free architectural evaluation &amp; fixed proposal.</p>
+        <h2 class="contact-form-title">Submit Project Brief</h2>
+        <p class="contact-form-sub">Fill in your tech, marketing, or video editing requirements for a free strategy consultation &amp; proposal.
+        </p>
 
         <form id="contact-page-form">
           <div class="form-grid">
@@ -356,7 +382,8 @@ $pdo = getDbConnection();
             <!-- 4. Preferred Language -->
             <div class="form-group">
               <label class="form-label" for="contact-lang">Preferred Language <span class="req">*</span></label>
-              <input list="lang-list-contact" type="text" id="contact-lang" class="form-input" placeholder="e.g. English, Tamil, Hindi" value="English" required />
+              <input list="lang-list-contact" type="text" id="contact-lang" class="form-input"
+                placeholder="e.g. English, Tamil, Hindi" value="English" required />
               <datalist id="lang-list-contact">
                 <option value="English">
                 <option value="Tamil (தமிழ்)">
@@ -370,33 +397,40 @@ $pdo = getDbConnection();
             <!-- 5. Estimated Budget -->
             <div class="form-group">
               <label class="form-label" for="contact-budget">Estimated Budget <span class="req">*</span></label>
-              <input list="budget-list-contact" type="text" id="contact-budget" class="form-input" placeholder="e.g. ₹25,000 – ₹75,000" value="₹25,000 – ₹75,000 (Custom Web & App)" required />
+              <input list="budget-list-contact" type="text" id="contact-budget" class="form-input"
+                placeholder="e.g. ₹25,000 – ₹75,000" value="₹25,000 – ₹75,000 (Custom Web & App)" required />
               <datalist id="budget-list-contact">
-                <option value="₹10,000 – ₹25,000 (MVP / Prototype)">
-                <option value="₹25,000 – ₹75,000 (Custom Web & App)">
-                <option value="₹75,000+ (Enterprise Partnership)">
-                <option value="₹5,000/mo – ₹35,000/mo (Digital Growth)">
+                <option value="₹5,000 – ₹15,000 (Video Editing / Ads / Branding)">
+                <option value="₹15,000 – ₹35,000/mo (Digital Marketing / SEO)">
+                <option value="₹25,000 – ₹75,000 (Custom Web & App Development)">
+                <option value="₹75,000+ (Enterprise SaaS & Full Growth)">
               </datalist>
             </div>
 
             <!-- 6. Project Type -->
             <div class="form-group">
               <label class="form-label" for="contact-type">Project Type</label>
-              <input list="type-list-contact" type="text" id="contact-type" class="form-input" placeholder="e.g. Custom SaaS Platform" value="Custom SaaS Platform" />
+              <input list="type-list-contact" type="text" id="contact-type" class="form-input"
+                placeholder="e.g. Tech, Marketing, or Editing" value="Technology & Software Development" />
               <datalist id="type-list-contact">
-                <option value="Custom SaaS Platform">
-                <option value="Mobile App (iOS & Android)">
-                <option value="School / Restaurant ERP">
-                <option value="WhatsApp / Telegram Gateway">
-                <option value="IVR Voice Automation">
-                <option value="Digital Marketing & Local SEO">
+                <option value="Technology & Software Development">
+                <option value="Website & Mobile App Development">
+                <option value="Digital Marketing & Meta/Google Ads">
+                <option value="SEO & Social Media Management">
+                <option value="Video Editing & Reels Production">
+                <option value="Graphic Design & Brand Identity">
+                <option value="School / Restaurant ERP Software">
+                <option value="WhatsApp Automation & AI Chatbots">
               </datalist>
             </div>
 
             <!-- 7. Requirements -->
             <div class="form-group full-width">
-              <label class="form-label" for="contact-reqs">Project Description &amp; Scope <span class="req">*</span></label>
-              <textarea id="contact-reqs" class="form-textarea" placeholder="Describe what you want to build, key features needed, and your target timeline..." required></textarea>
+              <label class="form-label" for="contact-reqs">Project Description &amp; Scope <span
+                  class="req">*</span></label>
+              <textarea id="contact-reqs" class="form-textarea"
+                placeholder="Describe what you want to build, key features needed, and your target timeline..."
+                required></textarea>
             </div>
 
           </div>
@@ -431,74 +465,86 @@ $pdo = getDbConnection();
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">⚡ SLA &amp; Response</span>
           <div class="faq-scroll-q">How fast will I hear back after submitting?</div>
-          <div class="faq-scroll-a">Our Technical Lead reviews all submitted briefs and responds via WhatsApp and Email within 24 to 48 business hours with a clear initial scope breakdown.</div>
+          <div class="faq-scroll-a">Our Technical Lead reviews all submitted briefs and responds via WhatsApp and Email
+            within 24 to 48 business hours with a clear initial scope breakdown.</div>
         </div>
 
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">🔒 NDA &amp; Security</span>
           <div class="faq-scroll-q">Do you execute mutual NDAs prior to discussion?</div>
-          <div class="faq-scroll-a">Yes. If your business project involves proprietary algorithms or unannounced IP, we sign standard mutual NDAs before receiving sensitive data.</div>
+          <div class="faq-scroll-a">Yes. If your business project involves proprietary algorithms or unannounced IP, we
+            sign standard mutual NDAs before receiving sensitive data.</div>
         </div>
 
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">💻 100% IP Ownership</span>
           <div class="faq-scroll-q">Who owns the intellectual property and code?</div>
-          <div class="faq-scroll-a">You do. 100% of the code, database schemas, and infrastructure deployment scripts are transferred to your company’s Git repository upon invoice clearance.</div>
+          <div class="faq-scroll-a">You do. 100% of the code, database schemas, and infrastructure deployment scripts
+            are transferred to your company’s Git repository upon invoice clearance.</div>
         </div>
 
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">🚀 Sandbox Demos</span>
           <div class="faq-scroll-q">Can I request a live demo of your ready-made platforms?</div>
-          <div class="faq-scroll-a">Absolutely. Submit your contact details above or click "Request Demo" on any product card across our site for immediate sandbox credentials.</div>
+          <div class="faq-scroll-a">Absolutely. Submit your contact details above or click "Request Demo" on any product
+            card across our site for immediate sandbox credentials.</div>
         </div>
 
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">🛠 Technology Stack</span>
           <div class="faq-scroll-q">What tech stack do you use for SaaS &amp; Mobile?</div>
-          <div class="faq-scroll-a">We build with Next.js, TypeScript, Flutter, Node.js, NestJS, Go, Python, and PostgreSQL with Docker &amp; Cloudflare edge infrastructure.</div>
+          <div class="faq-scroll-a">We build with Next.js, TypeScript, Flutter, Node.js, NestJS, Go, Python, and
+            PostgreSQL with Docker &amp; Cloudflare edge infrastructure.</div>
         </div>
 
         <div class="faq-scroll-card">
           <span class="faq-scroll-badge">📈 Post-Launch Support</span>
           <div class="faq-scroll-q">Do you offer ongoing post-launch maintenance?</div>
-          <div class="faq-scroll-a">Yes. All projects include a 30-day post-launch guarantee plus optional monthly retainer squads for continuous feature updates &amp; SLA monitoring.</div>
+          <div class="faq-scroll-a">Yes. All projects include a 30-day post-launch guarantee plus optional monthly
+            retainer squads for continuous feature updates &amp; SLA monitoring.</div>
         </div>
 
         <!-- Set 2: Duplicated for Seamless Loop -->
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">⚡ SLA &amp; Response</span>
           <div class="faq-scroll-q">How fast will I hear back after submitting?</div>
-          <div class="faq-scroll-a">Our Technical Lead reviews all submitted briefs and responds via WhatsApp and Email within 24 to 48 business hours with a clear initial scope breakdown.</div>
+          <div class="faq-scroll-a">Our Technical Lead reviews all submitted briefs and responds via WhatsApp and Email
+            within 24 to 48 business hours with a clear initial scope breakdown.</div>
         </div>
 
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">🔒 NDA &amp; Security</span>
           <div class="faq-scroll-q">Do you execute mutual NDAs prior to discussion?</div>
-          <div class="faq-scroll-a">Yes. If your business project involves proprietary algorithms or unannounced IP, we sign standard mutual NDAs before receiving sensitive data.</div>
+          <div class="faq-scroll-a">Yes. If your business project involves proprietary algorithms or unannounced IP, we
+            sign standard mutual NDAs before receiving sensitive data.</div>
         </div>
 
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">💻 100% IP Ownership</span>
           <div class="faq-scroll-q">Who owns the intellectual property and code?</div>
-          <div class="faq-scroll-a">You do. 100% of the code, database schemas, and infrastructure deployment scripts are transferred to your company’s Git repository upon invoice clearance.</div>
+          <div class="faq-scroll-a">You do. 100% of the code, database schemas, and infrastructure deployment scripts
+            are transferred to your company’s Git repository upon invoice clearance.</div>
         </div>
 
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">🚀 Sandbox Demos</span>
           <div class="faq-scroll-q">Can I request a live demo of your ready-made platforms?</div>
-          <div class="faq-scroll-a">Absolutely. Submit your contact details above or click "Request Demo" on any product card across our site for immediate sandbox credentials.</div>
+          <div class="faq-scroll-a">Absolutely. Submit your contact details above or click "Request Demo" on any product
+            card across our site for immediate sandbox credentials.</div>
         </div>
 
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">🛠 Technology Stack</span>
           <div class="faq-scroll-q">What tech stack do you use for SaaS &amp; Mobile?</div>
-          <div class="faq-scroll-a">We build with Next.js, TypeScript, Flutter, Node.js, NestJS, Go, Python, and PostgreSQL with Docker &amp; Cloudflare edge infrastructure.</div>
+          <div class="faq-scroll-a">We build with Next.js, TypeScript, Flutter, Node.js, NestJS, Go, Python, and
+            PostgreSQL with Docker &amp; Cloudflare edge infrastructure.</div>
         </div>
 
         <div class="faq-scroll-card" aria-hidden="true">
           <span class="faq-scroll-badge">📈 Post-Launch Support</span>
           <div class="faq-scroll-q">Do you offer ongoing post-launch maintenance?</div>
-          <div class="faq-scroll-a">Yes. All projects include a 30-day post-launch guarantee plus optional monthly retainer squads for continuous feature updates &amp; SLA monitoring.</div>
+          <div class="faq-scroll-a">Yes. All projects include a 30-day post-launch guarantee plus optional monthly
+            retainer squads for continuous feature updates &amp; SLA monitoring.</div>
         </div>
       </div>
     </div>
@@ -550,8 +596,10 @@ $pdo = getDbConnection();
         <div class="footer-links-col" style="font-size:0.82rem; color:var(--dim); line-height:1.7;">
           <p><strong>ZAMZY DIGITAL SOLUTIONS</strong></p>
           <p>📍 Hitech City, Hyderabad, Telangana, India</p>
-          <p>💬 <a href="https://wa.me/919876543210" target="_blank" style="color:var(--cyan); text-decoration:underline;">+91 98765 43210 (WhatsApp)</a></p>
-          <p>✉️ <a href="mailto:contact@zamzy.in" style="color:var(--cyan); text-decoration:underline;">contact@zamzy.in</a></p>
+          <p>💬 <a href="https://wa.me/919876543210" target="_blank"
+              style="color:var(--cyan); text-decoration:underline;">+91 98765 43210 (WhatsApp)</a></p>
+          <p>✉️ <a href="mailto:contact@zamzy.in"
+              style="color:var(--cyan); text-decoration:underline;">contact@zamzy.in</a></p>
         </div>
       </div>
     </div>
@@ -606,7 +654,8 @@ $pdo = getDbConnection();
       </div>
       <div class="thankyou-footer">
         <span class="thankyou-countdown">Closing automatically in <strong id="thankyou-countdown-num">5</strong>s</span>
-        <button type="button" class="btn btn-outline" id="close-thankyou-btn" style="padding: 0.5rem 1.2rem; font-size: 0.76rem;">Close Now →</button>
+        <button type="button" class="btn btn-outline" id="close-thankyou-btn"
+          style="padding: 0.5rem 1.2rem; font-size: 0.76rem;">Close Now →</button>
       </div>
     </div>
   </div>
@@ -615,4 +664,5 @@ $pdo = getDbConnection();
   <script src="tooplate-vora-bold-script.js"></script>
 
 </body>
+
 </html>
