@@ -250,12 +250,23 @@ require_once __DIR__ . '/db.php';
       </div>
 
       <div>
-        <div class="footer-col-title">Engineering Office</div>
+        <div class="footer-col-title">Studio Office</div>
         <div class="footer-links-col" style="font-size:0.82rem; color:var(--dim); line-height:1.7;">
           <p><strong>ZAMZY DIGITAL SOLUTIONS</strong></p>
           <p>📍 Hitech City, Hyderabad, Telangana, India</p>
           <p>💬 <a href="https://wa.me/919876543210" target="_blank" style="color:var(--cyan); text-decoration:underline;">+91 98765 43210 (WhatsApp)</a></p>
           <p>✉️ <a href="mailto:contact@zamzy.in" style="color:var(--cyan); text-decoration:underline;">contact@zamzy.in</a></p>
+          <div style="margin-top:0.8rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <a href="https://www.instagram.com/zamzy.in" target="_blank" rel="noopener" class="footer-social-badge">
+              📸 Instagram
+            </a>
+            <a href="https://www.facebook.com/share/1BwUK4uNSr/" target="_blank" rel="noopener" class="footer-social-badge">
+              📘 Facebook
+            </a>
+            <a href="https://www.linkedin.com/company/zamzy/" target="_blank" rel="noopener" class="footer-social-badge">
+              💼 LinkedIn
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -603,7 +603,7 @@ $pdo = getDbConnection();
 
       <!-- Column 4: Contact & Office -->
       <div>
-        <div class="footer-col-title">Engineering Office</div>
+        <div class="footer-col-title">Studio Office</div>
         <div class="footer-links-col" style="font-size:0.82rem; color:var(--dim); line-height:1.7;">
           <p><strong>ZAMZY DIGITAL SOLUTIONS</strong></p>
           <p>📍 Hitech City, Hyderabad, Telangana, India</p>
@@ -611,6 +611,17 @@ $pdo = getDbConnection();
               style="color:var(--cyan); text-decoration:underline;">+91 98765 43210 (WhatsApp)</a></p>
           <p>✉️ <a href="mailto:contact@zamzy.in"
               style="color:var(--cyan); text-decoration:underline;">contact@zamzy.in</a></p>
+          <div style="margin-top:0.8rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <a href="https://www.instagram.com/zamzy.in" target="_blank" rel="noopener" class="footer-social-badge">
+              📸 Instagram
+            </a>
+            <a href="https://www.facebook.com/share/1BwUK4uNSr/" target="_blank" rel="noopener" class="footer-social-badge">
+              📘 Facebook
+            </a>
+            <a href="https://www.linkedin.com/company/zamzy/" target="_blank" rel="noopener" class="footer-social-badge">
+              💼 LinkedIn
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -618,13 +629,14 @@ $pdo = getDbConnection();
     <!-- Bottom Bar -->
     <div class="footer-bottom-bar">
       <div class="footer-bottom-text">
-        ⚡ High-Concurrency Systems · 99.9% Uptime SLA · Hitech City, Hyderabad
+        ⚡ Tech, Digital Marketing &amp; Media Editing · Hitech City, Hyderabad
       </div>
       <div class="footer-social-links">
+        <a href="https://www.instagram.com/zamzy.in" target="_blank" rel="noopener" class="footer-social-link" style="color:var(--cyan);">Instagram</a>
+        <a href="https://www.facebook.com/share/1BwUK4uNSr/" target="_blank" rel="noopener" class="footer-social-link" style="color:var(--cyan);">Facebook</a>
+        <a href="https://www.linkedin.com/company/zamzy/" target="_blank" rel="noopener" class="footer-social-link" style="color:var(--cyan);">LinkedIn</a>
         <a href="privacy-policy.php" class="footer-social-link">Privacy Policy</a>
-        <a href="terms-and-conditions.php" class="footer-social-link">Terms &amp; Conditions</a>
-        <a href="refund-policy.php" class="footer-social-link">Refund Policy</a>
-        <a href="shipping-policy.php" class="footer-social-link">Shipping Policy</a>
+        <a href="terms-and-conditions.php" class="footer-social-link">Terms</a>
       </div>
     </div>
   </footer>
