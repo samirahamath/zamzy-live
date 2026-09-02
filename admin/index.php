@@ -53,9 +53,14 @@ if ($pdo) {
         <span class="admin-mobile-tag">Executive Console</span>
     </div>
     <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Navigation">
-        ☰
+        ☰ Menu
     </button>
 </div>
+
+<!-- Floating FAB Mobile Menu Button -->
+<button class="admin-floating-fab" id="adminFabToggle" aria-label="Open Navigation Menu">
+    ⚡ Menu
+</button>
 
 <!-- Mobile Drawer Overlay -->
 <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
@@ -280,15 +285,21 @@ if ($pdo) {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('adminMobileToggle');
+    const fabBtn = document.getElementById('adminFabToggle');
     const sidebar = document.getElementById('adminSidebar');
     const overlay = document.getElementById('adminSidebarOverlay');
 
-    if (toggleBtn && sidebar && overlay) {
-        toggleBtn.addEventListener('click', () => {
+    const toggleMenu = () => {
+        if (sidebar && overlay) {
             sidebar.classList.toggle('open');
             overlay.classList.toggle('open');
-        });
+        }
+    };
 
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleMenu);
+    if (fabBtn) fabBtn.addEventListener('click', toggleMenu);
+
+    if (overlay) {
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('open');
             overlay.classList.remove('open');
