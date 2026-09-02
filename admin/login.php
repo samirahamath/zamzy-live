@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['zamzy_admin_username'] = $user['username'];
                 $_SESSION['zamzy_admin_role'] = $user['role'];
 
-                $dashUrl = (strpos($_SERVER['REQUEST_URI'] ?? '', '/zz/') !== false) ? '/zz/admin/index.php' : '/admin/index.php';
+                $dashUrl = defined('ADMIN_URL') ? ADMIN_URL . '/index.php' : 'index.php';
                 header('Location: ' . $dashUrl);
                 exit;
             } else {

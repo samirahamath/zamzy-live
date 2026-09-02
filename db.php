@@ -31,6 +31,27 @@ if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') !== false ? getenv(
 if (!defined('DB_NAME')) define('DB_NAME', getenv('DB_NAME') ?: 'zamzy_db');
 if (!defined('DEEPSEEK_API_KEY')) define('DEEPSEEK_API_KEY', getenv('DEEPSEEK_API_KEY') ?: 'sk-71bbb2ea1a0e45dcbf2574d6f115aac1');
 
+// Dynamic BASE_URL and ADMIN_URL Detection Engine
+if (!defined('BASE_URL')) {
+    $envUrl = getenv('APP_URL');
+    if (!empty($envUrl) && strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') === false) {
+        define('BASE_URL', rtrim($envUrl, '/'));
+    } else {
+        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+        $scriptDir = rtrim($scriptDir, '/');
+        if (substr($scriptDir, -6) === '/admin') {
+            $scriptDir = substr($scriptDir, 0, -6);
+        }
+        define('BASE_URL', $scheme . '://' . $host . ($scriptDir ? $scriptDir : ''));
+    }
+}
+
+if (!defined('ADMIN_URL')) {
+    define('ADMIN_URL', BASE_URL . '/admin');
+}
+
 function getDbConnection() {
     static $pdo = null;
     if ($pdo !== null) {
