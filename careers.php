@@ -358,7 +358,15 @@ if ($pdo) {
   <section class="apply-section" id="apply-guild">
     <div style="max-width:900px; margin:0 auto;">
       
-      <div class="intake-form-wrap" style="padding:3rem 2.5rem;">
+      <div class="intake-form-wrap" style="padding:3rem 2.5rem; position:relative;">
+        <!-- Floating Z Brand Animation -->
+        <div class="z-floating-container" aria-hidden="true" style="top:25px; right:30px;">
+          <div class="z z-1">Z</div>
+          <div class="z z-2">Z</div>
+          <div class="z z-3">Z</div>
+          <div class="z z-4">Z</div>
+        </div>
+
         <span class="badge">Developer &amp; Creator Intake</span>
         <h2 class="intake-form-title" style="margin-top:0.6rem; font-size:2rem;">Join the ZAMZY Engineering Guild</h2>
         <p class="intake-form-sub" style="margin-bottom:2rem;">

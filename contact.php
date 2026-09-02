@@ -354,6 +354,14 @@ $pdo = getDbConnection();
 
       <!-- Right Column: Interactive Intake Form -->
       <div class="contact-form-wrap">
+        <!-- Floating Z Brand Animation -->
+        <div class="z-floating-container" aria-hidden="true">
+          <div class="z z-1">Z</div>
+          <div class="z z-2">Z</div>
+          <div class="z z-3">Z</div>
+          <div class="z z-4">Z</div>
+        </div>
+
         <h2 class="contact-form-title">Submit Project Brief</h2>
         <p class="contact-form-sub">Fill in your tech, marketing, or video editing requirements for a free strategy consultation &amp; proposal.
         </p>
