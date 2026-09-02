@@ -7,14 +7,52 @@ $pdo = getDbConnection();
 $msg = '';
 
 // Handle Status & Notes Updates
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
-    $id = intval($_POST['id'] ?? 0);
-    $status = trim($_POST['status'] ?? 'new');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
 
-    if ($id > 0 && $pdo) {
-        $stmt = $pdo->prepare("UPDATE `zamzy_inquiries` SET `status` = :status WHERE `id` = :id");
-        $stmt->execute([':status' => $status, ':id' => $id]);
-        $msg = "Inquiry #$id marked as " . strtoupper($status);
+    if ($action === 'update_status') {
+        $id = intval($_POST['id'] ?? 0);
+        $status = trim($_POST['status'] ?? 'new');
+
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("UPDATE `zamzy_inquiries` SET `status` = :status WHERE `id` = :id");
+            $stmt->execute([':status' => $status, ':id' => $id]);
+            $msg = "Inquiry #$id marked as " . strtoupper($status);
+        }
+    }
+
+    if ($action === 'delete_single') {
+        $id = intval($_POST['id'] ?? 0);
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("DELETE FROM `zamzy_inquiries` WHERE `id` = :id");
+            $stmt->execute([':id' => $id]);
+            $msg = "Inquiry #$id deleted successfully.";
+        }
+    }
+
+    if ($action === 'delete_bulk') {
+        $ids = $_POST['ids'] ?? [];
+        if (!empty($ids) && is_array($ids) && $pdo) {
+            $cleanIds = array_map('intval', $ids);
+            $inClause = implode(',', $cleanIds);
+            $pdo->exec("DELETE FROM `zamzy_inquiries` WHERE `id` IN ($inClause)");
+            $msg = count($cleanIds) . " inquiries deleted successfully.";
+        }
+    }
+
+    if ($action === 'edit_inquiry') {
+        $id = intval($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $status = trim($_POST['status'] ?? 'new');
+        $reqs = trim($_POST['requirements'] ?? '');
+
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("UPDATE `zamzy_inquiries` SET `name` = :name, `phone` = :phone, `email` = :email, `status` = :status, `requirements` = :reqs WHERE `id` = :id");
+            $stmt->execute([':name' => $name, ':phone' => $phone, ':email' => $email, ':status' => $status, ':reqs' => $reqs, ':id' => $id]);
+            $msg = "Inquiry #$id updated successfully.";
+        }
     }
 }
 
@@ -184,86 +222,96 @@ if ($pdo) {
             </form>
         </div>
 
-        <!-- Inquiries Table -->
-        <div class="table-responsive-admin">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Client Details</th>
-                        <th>Language &amp; Budget</th>
-                        <th>Project Scope &amp; Brief</th>
-                        <th>Status</th>
-                        <th>WhatsApp Connect</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($inquiries)): ?>
-                        <tr>
-                            <td colspan="7" style="text-align:center; padding:3rem; opacity:0.6;">No inquiries found matching your filters.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($inquiries as $inq): ?>
-                            <?php $isHighlighted = ($selectedId === intval($inq['id'])); ?>
-                            <tr style="<?= $isHighlighted ? 'background:rgba(6,182,212,0.1);' : '' ?>">
-                                <td><strong>#<?= $inq['id'] ?></strong></td>
-                                <td>
-                                    <strong style="font-size:0.9rem; color:var(--white);"><?= htmlspecialchars($inq['name']) ?></strong><br>
-                                    <span style="font-size:0.75rem; color:var(--cyan);"><?= htmlspecialchars($inq['phone']) ?></span><br>
-                                    <span style="font-size:0.7rem; color:var(--faint);"><?= htmlspecialchars($inq['email']) ?></span><br>
-                                    <span style="font-size:0.65rem; color:var(--dim);"><?= date('M j, Y - H:i', strtotime($inq['created_at'])) ?></span>
-                                </td>
-                                <td>
-                                    <span class="badge" style="font-size:0.68rem; margin-bottom:0.3rem;">
-                                        🗣 <?= htmlspecialchars($inq['preferred_language'] ?? 'English') ?>
-                                    </span><br>
-                                    <span style="font-size:0.75rem; font-weight:700; color:var(--white);">
-                                        <?= htmlspecialchars($inq['budget'] ?? $inq['tier'] ?? 'Custom') ?>
-                                    </span>
-                                </td>
-                                <td style="max-width:320px; line-height:1.6; font-size:0.75rem;">
-                                    <span style="color:var(--cyan); font-weight:600;"><?= htmlspecialchars($inq['project_type'] ?? 'Custom Build') ?></span><br>
-                                    <?= nl2br(htmlspecialchars($inq['requirements'])) ?>
-                                </td>
-                                <td>
-                                    <span class="badge-status <?= htmlspecialchars($inq['status']) ?>">
-                                        <?= strtoupper($inq['status']) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php 
-                                        $cleanPhone = preg_replace('/[^0-9]/', '', $inq['phone']);
-                                        $lang = htmlspecialchars($inq['preferred_language'] ?? 'English');
-                                        $prefill = urlencode("Hello {$inq['name']}, thank you for submitting your project brief to ZAMZY (Zamzy.in). Our solution architect is ready to discuss your {$inq['project_type']} requirements.");
-                                    ?>
-                                    <a href="https://wa.me/<?= $cleanPhone ?>?text=<?= $prefill ?>" target="_blank" class="btn-admin btn-admin-sm">
-                                        💬 WhatsApp
-                                    </a>
-                                </td>
-                                <td>
-                                    <form action="inquiries.php" method="POST" style="display:flex; flex-direction:column; gap:0.4rem; min-width:130px;">
-                                        <input type="hidden" name="action" value="update_status">
-                                        <input type="hidden" name="id" value="<?= $inq['id'] ?>">
-                                        
-                                        <select name="status" class="form-control-admin" style="padding:0.4rem 0.6rem; font-size:0.7rem;">
-                                            <option value="partial" <?= $inq['status'] === 'partial' ? 'selected' : '' ?>>⚡ Partial</option>
-                                            <option value="new" <?= $inq['status'] === 'new' ? 'selected' : '' ?>>New</option>
-                                            <option value="contacted" <?= $inq['status'] === 'contacted' ? 'selected' : '' ?>>Contacted</option>
-                                            <option value="in_progress" <?= $inq['status'] === 'in_progress' ? 'selected' : '' ?>>In Progress</option>
-                                            <option value="converted" <?= $inq['status'] === 'converted' ? 'selected' : '' ?>>Converted</option>
-                                            <option value="archived" <?= $inq['status'] === 'archived' ? 'selected' : '' ?>>Archived</option>
-                                        </select>
+        <!-- Bulk Action Bar -->
+        <form id="bulkForm" action="inquiries.php" method="POST">
+            <input type="hidden" name="action" value="delete_bulk">
+            <div class="bulk-action-bar">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="selectAll" class="admin-checkbox">
+                    <strong>Select All</strong>
+                </label>
+                <button type="submit" class="btn-danger-admin" id="bulkDeleteBtn" style="display:none;" onclick="return confirm('Are you sure you want to PERMANENTLY DELETE all selected inquiries?')">
+                    🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+            </div>
 
-                                        <button type="submit" class="btn-admin btn-admin-outline btn-admin-sm">Save</button>
-                                    </form>
-                                </td>
+            <!-- Inquiries Table -->
+            <div class="table-responsive-admin">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"></th>
+                            <th>ID</th>
+                            <th>Client Details</th>
+                            <th>Language &amp; Budget</th>
+                            <th>Project Scope &amp; Brief</th>
+                            <th>Status</th>
+                            <th>WhatsApp Connect</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($inquiries)): ?>
+                            <tr>
+                                <td colspan="8" style="text-align:center; padding:3rem; opacity:0.6;">No inquiries found matching your filters.</td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                        <?php else: ?>
+                            <?php foreach ($inquiries as $inq): ?>
+                                <?php $isHighlighted = ($selectedId === intval($inq['id'])); ?>
+                                <tr style="<?= $isHighlighted ? 'background:rgba(6,182,212,0.1);' : '' ?>">
+                                    <td>
+                                        <input type="checkbox" name="ids[]" value="<?= $inq['id'] ?>" class="admin-checkbox rowCheckbox">
+                                    </td>
+                                    <td><strong>#<?= $inq['id'] ?></strong></td>
+                                    <td>
+                                        <strong style="font-size:0.9rem; color:var(--white);"><?= htmlspecialchars($inq['name']) ?></strong><br>
+                                        <span style="font-size:0.75rem; color:var(--cyan);"><?= htmlspecialchars($inq['phone']) ?></span><br>
+                                        <span style="font-size:0.7rem; color:var(--faint);"><?= htmlspecialchars($inq['email']) ?></span><br>
+                                        <span style="font-size:0.65rem; color:var(--dim);"><?= date('M j, Y - H:i', strtotime($inq['created_at'])) ?></span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="font-size:0.68rem; margin-bottom:0.3rem;">
+                                            🗣 <?= htmlspecialchars($inq['preferred_language'] ?? 'English') ?>
+                                        </span><br>
+                                        <span style="font-size:0.75rem; font-weight:700; color:var(--white);">
+                                            <?= htmlspecialchars($inq['budget'] ?? $inq['tier'] ?? 'Custom') ?>
+                                        </span>
+                                    </td>
+                                    <td style="max-width:300px; line-height:1.6; font-size:0.75rem;">
+                                        <span style="color:var(--cyan); font-weight:600;"><?= htmlspecialchars($inq['project_type'] ?? 'Custom Build') ?></span><br>
+                                        <?= nl2br(htmlspecialchars($inq['requirements'])) ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge-status <?= htmlspecialchars($inq['status']) ?>">
+                                            <?= strtoupper($inq['status']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                            $cleanPhone = preg_replace('/[^0-9]/', '', $inq['phone']);
+                                            $prefill = urlencode("Hello {$inq['name']}, thank you for submitting your project brief to ZAMZY (Zamzy.in). Our solution architect is ready to discuss your {$inq['project_type']} requirements.");
+                                        ?>
+                                        <a href="https://wa.me/<?= $cleanPhone ?>?text=<?= $prefill ?>" target="_blank" class="btn-admin btn-admin-sm">
+                                            💬 WhatsApp
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; gap:0.4rem; align-items:center;">
+                                            <button type="button" class="btn-edit-admin" onclick="openEditModal(<?= htmlspecialchars(json_encode($inq)) ?>)">
+                                                ✏️ Edit
+                                            </button>
+                                            <button type="button" class="btn-danger-admin" style="padding:0.35rem 0.6rem; font-size:0.72rem;" onclick="deleteSingleInquiry(<?= $inq['id'] ?>)">
+                                                🗑️
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </form>
 
         <!-- Pagination Controls -->
         <?php if ($totalPages > 1): ?>
@@ -293,6 +341,63 @@ if ($pdo) {
 
 </div>
 
+<!-- Single Delete Form -->
+<form id="singleDeleteForm" action="inquiries.php" method="POST" style="display:none;">
+    <input type="hidden" name="action" value="delete_single">
+    <input type="hidden" name="id" id="singleDeleteId" value="">
+</form>
+
+<!-- Edit Inquiry Modal Dialog -->
+<div class="admin-modal" id="editModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">✏️ Edit Inquiry Brief</h3>
+            <button class="admin-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form action="inquiries.php" method="POST" style="display:flex; flex-direction:column; gap:1rem;">
+            <input type="hidden" name="action" value="edit_inquiry">
+            <input type="hidden" name="id" id="editInquiryId" value="">
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Client Full Name</label>
+                <input type="text" name="name" id="editName" class="search-input" style="width:100%;" required>
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">WhatsApp / Phone Number</label>
+                <input type="text" name="phone" id="editPhone" class="search-input" style="width:100%;" required>
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Email Address</label>
+                <input type="email" name="email" id="editEmail" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Lead Status</label>
+                <select name="status" id="editStatus" class="form-control-admin" style="width:100%;">
+                    <option value="partial">⚡ Partial (Abandoned)</option>
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="converted">Converted</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Project Requirements / Notes</label>
+                <textarea name="requirements" id="editRequirements" class="search-input" style="width:100%; min-height:110px; font-family:sans-serif; line-height:1.5;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.8rem; margin-top:0.8rem;">
+                <button type="button" class="btn-admin btn-admin-outline" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-admin">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('adminMobileToggle');
@@ -310,7 +415,59 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.remove('open');
         });
     }
+
+    // Checkbox Multiple Select & Bulk Delete Controls
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateBulkState() {
+        const checked = document.querySelectorAll('.rowCheckbox:checked');
+        const count = checked.length;
+        selectedCount.textContent = count;
+        if (count > 0) {
+            bulkDeleteBtn.style.display = 'inline-flex';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', (e) => {
+            rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            updateBulkState();
+        });
+    }
+
+    rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (!cb.checked && selectAll) selectAll.checked = false;
+            updateBulkState();
+        });
+    });
 });
+
+function deleteSingleInquiry(id) {
+    if (confirm('Are you sure you want to PERMANENTLY DELETE Inquiry #' + id + '?')) {
+        document.getElementById('singleDeleteId').value = id;
+        document.getElementById('singleDeleteForm').submit();
+    }
+}
+
+function openEditModal(inq) {
+    document.getElementById('editInquiryId').value = inq.id;
+    document.getElementById('editName').value = inq.name || '';
+    document.getElementById('editPhone').value = inq.phone || '';
+    document.getElementById('editEmail').value = inq.email || '';
+    document.getElementById('editStatus').value = inq.status || 'new';
+    document.getElementById('editRequirements').value = inq.requirements || '';
+    document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+}
 </script>
 </body>
 </html>
