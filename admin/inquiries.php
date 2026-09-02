@@ -102,10 +102,24 @@ if ($pdo) {
 </head>
 <body>
 
+<!-- Mobile Admin Navigation Header -->
+<div class="admin-mobile-header">
+    <div class="admin-mobile-brand">
+        <span class="admin-mobile-logo">ZAMZY<span>.</span></span>
+        <span class="admin-mobile-tag">Executive Console</span>
+    </div>
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Navigation">
+        ☰
+    </button>
+</div>
+
+<!-- Mobile Drawer Overlay -->
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
 <div class="admin-shell">
 
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <!-- Sidebar Drawer -->
+    <aside class="admin-sidebar" id="adminSidebar">
         <div>
             <div class="admin-sidebar__brand">
                 <span class="admin-sidebar__logo">ZAMZY<span>.</span></span>
@@ -171,7 +185,7 @@ if ($pdo) {
         </div>
 
         <!-- Inquiries Table -->
-        <div class="table-container">
+        <div class="table-responsive-admin">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -279,5 +293,24 @@ if ($pdo) {
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('adminMobileToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+
+    if (toggleBtn && sidebar && overlay) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    }
+});
+</script>
 </body>
 </html>

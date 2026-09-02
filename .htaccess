@@ -19,9 +19,15 @@ RewriteRule ^([^.]+)\.php$ $1 [R=301,L]
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.\ ]+)\.html [NC]
 RewriteRule ^([^.]+)\.html$ $1 [R=301,L]
 
-# 5. Clean admin and page routing
-RewriteRule ^admin/?$ admin/index.php [L]
-RewriteRule ^admin/login/?$ admin/login.php [L]
+# 5. Clean Secret Admin & Page Routing
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/?$ admin/index.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/login/?$ admin/login.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/logout/?$ admin/logout.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/inquiries/?$ admin/inquiries.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/demos/?$ admin/demos.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/chats/?$ admin/chats.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/testimonials/?$ admin/testimonials.php [L,QSA]
+RewriteRule ^(zamzy-control|console|control|admin-portal|admin)/careers/?$ admin/careers.php [L,QSA]
 
 RewriteRule ^career/?$ careers.php [L,QSA]
 RewriteRule ^careers/?$ careers.php [L,QSA]
