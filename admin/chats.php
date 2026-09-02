@@ -10,15 +10,39 @@ $pdo = getDbConnection();
 $msg = '';
 $error = '';
 
-// Handle Delete Session
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $delId = intval($_GET['id']);
-    try {
-        $del = $pdo->prepare("DELETE FROM `zamzy_chat_sessions` WHERE `id` = :id");
-        $del->execute([':id' => $delId]);
-        $msg = "Chat session #{$delId} and transcript records deleted.";
-    } catch (PDOException $e) {
-        $error = "Error deleting session: " . $e->getMessage();
+// Handle Delete & Edit Actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+
+    if ($action === 'delete_single') {
+        $delId = intval($_POST['id'] ?? 0);
+        if ($delId > 0 && $pdo) {
+            $pdo->prepare("DELETE FROM `zamzy_chat_sessions` WHERE `id` = :id")->execute([':id' => $delId]);
+            $msg = "Chat session #{$delId} and transcript records deleted.";
+        }
+    }
+
+    if ($action === 'delete_bulk') {
+        $ids = $_POST['ids'] ?? [];
+        if (!empty($ids) && is_array($ids) && $pdo) {
+            $cleanIds = array_map('intval', $ids);
+            $inClause = implode(',', $cleanIds);
+            $pdo->exec("DELETE FROM `zamzy_chat_sessions` WHERE `id` IN ($inClause)");
+            $msg = count($cleanIds) . " chat sessions deleted.";
+        }
+    }
+
+    if ($action === 'edit_session') {
+        $id = intval($_POST['id'] ?? 0);
+        $name = trim($_POST['user_name'] ?? '');
+        $phone = trim($_POST['user_phone'] ?? '');
+        $email = trim($_POST['user_email'] ?? '');
+
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("UPDATE `zamzy_chat_sessions` SET `user_name` = :n, `user_phone` = :p, `user_email` = :e WHERE `id` = :id");
+            $stmt->execute([':n' => $name, ':p' => $phone, ':e' => $email, ':id' => $id]);
+            $msg = "Chat session #$id updated successfully.";
+        }
     }
 }
 
@@ -82,9 +106,12 @@ if ($pdo) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZAMZY Admin — Chat Reports &amp; AI Transcripts</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
     <style>
         .transcript-modal {
             position: fixed;
@@ -171,8 +198,29 @@ if ($pdo) {
 </head>
 <body class="admin-body">
 
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
+<!-- Mobile Admin Navigation Header -->
+<div class="admin-mobile-header">
+    <div class="admin-mobile-brand">
+        <span class="admin-mobile-logo">ZAMZY<span>.</span></span>
+        <span class="admin-mobile-tag">Executive Console</span>
+    </div>
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Navigation">
+        ☰ Menu
+    </button>
+</div>
+
+<!-- Floating FAB Mobile Menu Button -->
+<button class="admin-floating-fab" id="adminFabToggle" aria-label="Open Navigation Menu">
+    ⚡ Menu
+</button>
+
+<!-- Mobile Drawer Overlay -->
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
+<div class="admin-shell">
+
+    <!-- Sidebar Drawer -->
+    <aside class="admin-sidebar" id="adminSidebar">
         <div>
             <div class="admin-sidebar__brand">
                 <span class="admin-sidebar__logo">ZAMZY<span>.</span></span>
@@ -274,86 +322,102 @@ if ($pdo) {
             </form>
         </div>
 
-        <!-- Chat Sessions Table -->
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Visitor Details</th>
-                        <th>Contact Channels</th>
-                        <th>Messages</th>
-                        <th>Last Message Exchanged</th>
-                        <th>Date / Activity</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($sessions)): ?>
+        <!-- Bulk Action Bar -->
+        <form id="bulkForm" action="chats.php" method="POST">
+            <input type="hidden" name="action" value="delete_bulk">
+            <div class="bulk-action-bar">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="selectAll" class="admin-checkbox">
+                    <strong>Select All</strong>
+                </label>
+                <button type="submit" class="btn-danger-admin" id="bulkDeleteBtn" style="display:none;" onclick="return confirm('Are you sure you want to PERMANENTLY DELETE selected chat sessions?')">
+                    🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+            </div>
+
+            <!-- Chat Sessions Table -->
+            <div class="table-responsive-admin">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td colspan="7" style="text-align:center; padding:3rem; color:var(--faint);">
-                                No chat reports found matching your criteria.
-                            </td>
+                            <th style="width:40px;"></th>
+                            <th>ID</th>
+                            <th>Visitor Details</th>
+                            <th>Contact Channels</th>
+                            <th>Messages</th>
+                            <th>Last Message Exchanged</th>
+                            <th>Date / Activity</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($sessions as $s): ?>
-                            <?php
-                                $cleanPhone = preg_replace('/[^0-9]/', '', $s['user_phone'] ?? '');
-                                if (strlen($cleanPhone) === 10) $cleanPhone = '91' . $cleanPhone;
-                            ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($sessions)): ?>
                             <tr>
-                                <td><span class="badge">#<?= $s['id'] ?></span></td>
-                                <td>
-                                    <strong><?= htmlspecialchars($s['user_name'] ?: 'Anonymous Visitor') ?></strong>
-                                    <?php if (!empty($s['user_phone']) || !empty($s['user_email'])): ?>
-                                        <div style="margin-top:4px;"><span class="badge" style="font-size:0.58rem; border-color:#10b981; color:#10b981;">✓ Lead Captured</span></div>
-                                    <?php else: ?>
-                                        <div style="margin-top:4px;"><span class="badge" style="font-size:0.58rem; color:var(--faint);">Browsing</span></div>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if (!empty($s['user_phone'])): ?>
-                                        <div><a href="https://wa.me/<?= $cleanPhone ?>" target="_blank" style="color:var(--cyan); text-decoration:underline;">📱 <?= htmlspecialchars($s['user_phone']) ?></a></div>
-                                    <?php endif; ?>
-                                    <?php if (!empty($s['user_email'])): ?>
-                                        <div style="font-size:0.75rem; color:var(--dim);">✉ <?= htmlspecialchars($s['user_email']) ?></div>
-                                    <?php endif; ?>
-                                    <?php if (empty($s['user_phone']) && empty($s['user_email'])): ?>
-                                        <span style="color:var(--faint);">No contact info</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background:rgba(139,92,246,0.15); border-color:var(--violet); color:#c4b5fd;">
-                                        💬 <?= intval($s['total_messages']) ?> msgs
-                                    </span>
-                                </td>
-                                <td style="max-width:240px; font-size:0.75rem; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    <?= htmlspecialchars($s['last_message'] ?: 'Conversation initiated.') ?>
-                                </td>
-                                <td style="font-size:0.72rem; color:var(--faint);">
-                                    <?= date('d M Y, h:i A', strtotime($s['updated_at'])) ?>
-                                </td>
-                                <td>
-                                    <div style="display:flex; gap:0.5rem; align-items:center;">
-                                        <button class="btn-admin btn-admin-sm view-transcript-btn" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['user_name'] ?: 'Visitor #' . $s['id']) ?>" data-phone="<?= htmlspecialchars($s['user_phone'] ?? '') ?>" data-email="<?= htmlspecialchars($s['user_email'] ?? '') ?>" style="padding:0.4rem 0.8rem; font-size:0.68rem;">
-                                            👁 Transcript
-                                        </button>
-                                        <?php if (!empty($cleanPhone)): ?>
-                                            <a href="https://wa.me/<?= $cleanPhone ?>?text=<?= urlencode("Hello " . ($s['user_name'] ?: '') . ", following up on your consultation with ZAMZY Digital Solutions.") ?>" target="_blank" class="btn-admin btn-admin-sm" style="padding:0.4rem 0.8rem; font-size:0.68rem; background:rgba(16,185,129,0.2); border-color:#10b981; color:#10b981;">
-                                                WhatsApp
-                                            </a>
-                                        <?php endif; ?>
-                                        <a href="chats.php?action=delete&id=<?= $s['id'] ?>" onclick="return confirm('Delete this entire chat transcript?')" class="btn-admin btn-admin-outline btn-admin-sm" style="padding:0.4rem 0.6rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
-                                            ✕
-                                        </a>
-                                    </div>
+                                <td colspan="8" style="text-align:center; padding:3rem; color:var(--faint);">
+                                    No chat reports found matching your criteria.
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                        <?php else: ?>
+                            <?php foreach ($sessions as $s): ?>
+                                <?php
+                                    $cleanPhone = preg_replace('/[^0-9]/', '', $s['user_phone'] ?? '');
+                                    if (strlen($cleanPhone) === 10) $cleanPhone = '91' . $cleanPhone;
+                                ?>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="ids[]" value="<?= $s['id'] ?>" class="admin-checkbox rowCheckbox">
+                                    </td>
+                                    <td><span class="badge">#<?= $s['id'] ?></span></td>
+                                    <td>
+                                        <strong style="color:var(--white);"><?= htmlspecialchars($s['user_name'] ?: 'Anonymous Visitor') ?></strong>
+                                        <?php if (!empty($s['user_phone']) || !empty($s['user_email'])): ?>
+                                            <div style="margin-top:4px;"><span class="badge" style="font-size:0.58rem; border-color:#10b981; color:#10b981;">✓ Lead Captured</span></div>
+                                        <?php else: ?>
+                                            <div style="margin-top:4px;"><span class="badge" style="font-size:0.58rem; color:var(--faint);">Browsing</span></div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($s['user_phone'])): ?>
+                                            <div><a href="https://wa.me/<?= $cleanPhone ?>" target="_blank" style="color:var(--cyan); text-decoration:underline;">📱 <?= htmlspecialchars($s['user_phone']) ?></a></div>
+                                        <?php endif; ?>
+                                        <?php if (!empty($s['user_email'])): ?>
+                                            <div style="font-size:0.75rem; color:var(--dim);">✉ <?= htmlspecialchars($s['user_email']) ?></div>
+                                        <?php endif; ?>
+                                        <?php if (empty($s['user_phone']) && empty($s['user_email'])): ?>
+                                            <span style="color:var(--faint);">No contact info</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background:rgba(139,92,246,0.15); border-color:var(--violet); color:#c4b5fd;">
+                                            💬 <?= intval($s['total_messages']) ?> msgs
+                                        </span>
+                                    </td>
+                                    <td style="max-width:240px; font-size:0.75rem; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        <?= htmlspecialchars($s['last_message'] ?: 'Conversation initiated.') ?>
+                                    </td>
+                                    <td style="font-size:0.72rem; color:var(--faint);">
+                                        <?= date('d M Y, h:i A', strtotime($s['updated_at'])) ?>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; gap:0.4rem; align-items:center;">
+                                            <button type="button" class="btn-admin btn-admin-sm view-transcript-btn" data-id="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['user_name'] ?: 'Visitor #' . $s['id']) ?>" data-phone="<?= htmlspecialchars($s['user_phone'] ?? '') ?>" data-email="<?= htmlspecialchars($s['user_email'] ?? '') ?>" style="padding:0.35rem 0.6rem; font-size:0.68rem;">
+                                                👁 Transcript
+                                            </button>
+                                            <button type="button" class="btn-edit-admin" onclick="openEditModal(<?= htmlspecialchars(json_encode($s)) ?>)">
+                                                ✏️ Edit
+                                            </button>
+                                            <button type="button" class="btn-danger-admin" style="padding:0.35rem 0.6rem; font-size:0.72rem;" onclick="deleteSingleChat(<?= $s['id'] ?>)">
+                                                🗑️
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </form>
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
@@ -469,12 +533,194 @@ if ($pdo) {
             });
         });
 
+<!-- Single Delete Form -->
+<form id="singleDeleteForm" action="chats.php" method="POST" style="display:none;">
+    <input type="hidden" name="action" value="delete_single">
+    <input type="hidden" name="id" id="singleDeleteId" value="">
+</form>
+
+<!-- Edit Chat Session Modal -->
+<div class="admin-modal" id="editModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">✏️ Edit Visitor Lead Info</h3>
+            <button class="admin-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form action="chats.php" method="POST" style="display:flex; flex-direction:column; gap:1rem;">
+            <input type="hidden" name="action" value="edit_session">
+            <input type="hidden" name="id" id="editSessionId" value="">
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Visitor Name</label>
+                <input type="text" name="user_name" id="editName" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">WhatsApp / Phone Number</label>
+                <input type="text" name="user_phone" id="editPhone" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Email Address</label>
+                <input type="email" name="user_email" id="editEmail" class="search-input" style="width:100%;">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.8rem; margin-top:0.8rem;">
+                <button type="button" class="btn-admin btn-admin-outline" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-admin">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('adminMobileToggle');
+        const fabBtn = document.getElementById('adminFabToggle');
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('adminSidebarOverlay');
+
+        const toggleMenu = () => {
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('open');
+            }
+        };
+
+        if (toggleBtn) toggleBtn.addEventListener('click', toggleMenu);
+        if (fabBtn) fabBtn.addEventListener('click', toggleMenu);
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            });
+        }
+
+        const selectAll = document.getElementById('selectAll');
+        const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const selectedCount = document.getElementById('selectedCount');
+
+        function updateBulkState() {
+            const checked = document.querySelectorAll('.rowCheckbox:checked');
+            const count = checked.length;
+            selectedCount.textContent = count;
+            if (count > 0) {
+                bulkDeleteBtn.style.display = 'inline-flex';
+            } else {
+                bulkDeleteBtn.style.display = 'none';
+            }
+        }
+
+        if (selectAll) {
+            selectAll.addEventListener('change', (e) => {
+                rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+                updateBulkState();
+            });
+        }
+
+        rowCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (!cb.checked && selectAll) selectAll.checked = false;
+                updateBulkState();
+            });
+        });
+
+        // Transcript Modal Controls
+        const modal = document.getElementById('transcript-modal');
+        const closeBtn = document.getElementById('t-modal-close');
+        const closeBtn2 = document.getElementById('close-transcript-btn');
+        const tBody = document.getElementById('transcript-body');
+        const tTitle = document.getElementById('t-modal-title');
+        const tSub = document.getElementById('t-modal-sub');
+        const tWaBtn = document.getElementById('t-modal-wa-btn');
+        const tContact = document.getElementById('t-modal-footer-contact');
+
+        function closeModal() { modal.classList.remove('open'); }
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (closeBtn2) closeBtn2.addEventListener('click', closeModal);
+        if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        document.querySelectorAll('.view-transcript-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-id');
+                const name = btn.getAttribute('data-name');
+                const phone = btn.getAttribute('data-phone');
+                const email = btn.getAttribute('data-email');
+
+                tTitle.textContent = `Chat Transcript: ${name}`;
+                tSub.textContent = `Session #${id} · ${phone ? 'Phone: ' + phone : ''} ${email ? ' | Email: ' + email : ''}`;
+                
+                tContact.textContent = phone ? `WhatsApp: ${phone}` : (email ? `Email: ${email}` : 'Anonymous visitor');
+                if (phone) {
+                    let cleanPhone = phone.replace(/[^0-9]/g, '');
+                    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                    tWaBtn.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("Hello " + name + ", following up on your consultation with ZAMZY Digital Solutions.")}`;
+                    tWaBtn.style.display = 'inline-flex';
+                } else {
+                    tWaBtn.style.display = 'none';
+                }
+
+                tBody.innerHTML = '<div style="text-align:center; color:var(--faint); font-family:var(--mono); font-size:0.8rem; padding:2rem;">Fetching conversation history...</div>';
+                modal.classList.add('open');
+
+                try {
+                    const res = await fetch(`../api.php?action=get_chat_transcript&session_id=${id}`);
+                    const data = await res.json();
+                    
+                    if (!data.success || !data.messages || data.messages.length === 0) {
+                        tBody.innerHTML = '<div style="text-align:center; color:var(--faint); font-family:var(--mono); font-size:0.8rem; padding:2rem;">No messages found in this chat session.</div>';
+                        return;
+                    }
+
+                    tBody.innerHTML = '';
+                    data.messages.forEach(m => {
+                        const isUser = m.sender === 'user';
+                        const div = document.createElement('div');
+                        div.className = `t-msg ${isUser ? 'user' : 'bot'}`;
+                        
+                        const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        
+                        div.innerHTML = `
+                            <div class="t-bubble">${escapeHtml(m.message)}</div>
+                            <div class="t-meta">${isUser ? (name || 'Visitor') : 'ZAMZY AI Assistant'} · ${time}</div>
+                        `;
+                        tBody.appendChild(div);
+                    });
+
+                    tBody.scrollTop = tBody.scrollHeight;
+                } catch (e) {
+                    tBody.innerHTML = '<div style="text-align:center; color:#ef4444; font-family:var(--mono); font-size:0.8rem; padding:2rem;">Failed to load transcript.</div>';
+                }
+            });
+        });
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
     });
+
+    function deleteSingleChat(id) {
+        if (confirm('Are you sure you want to PERMANENTLY DELETE Chat Session #' + id + '?')) {
+            document.getElementById('singleDeleteId').value = id;
+            document.getElementById('singleDeleteForm').submit();
+        }
+    }
+
+    function openEditModal(s) {
+        document.getElementById('editSessionId').value = s.id;
+        document.getElementById('editName').value = s.user_name || '';
+        document.getElementById('editPhone').value = s.user_phone || '';
+        document.getElementById('editEmail').value = s.user_email || '';
+        document.getElementById('editModal').classList.add('open');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('open');
+    }
     </script>
 </body>
 </html>

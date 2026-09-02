@@ -63,10 +63,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = trim($_POST['status'] ?? 'new');
         $notes = trim($_POST['internal_notes'] ?? '');
 
-        if ($id > 0) {
+        if ($id > 0 && $pdo) {
             $stmt = $pdo->prepare("UPDATE `zamzy_careers_applications` SET `status` = :status, `internal_notes` = :notes WHERE `id` = :id");
             $stmt->execute([':status' => $status, ':notes' => $notes, ':id' => $id]);
             $msg = "Application #$id updated to " . strtoupper($status) . ".";
+        }
+    }
+
+    // 5. Delete Single Application
+    elseif ($action === 'delete_app') {
+        $id = intval($_POST['id'] ?? 0);
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("DELETE FROM `zamzy_careers_applications` WHERE `id` = :id");
+            $stmt->execute([':id' => $id]);
+            $msg = "Application #$id deleted.";
+        }
+    }
+
+    // 6. Delete Bulk Applications
+    elseif ($action === 'delete_bulk_apps') {
+        $ids = $_POST['ids'] ?? [];
+        if (!empty($ids) && is_array($ids) && $pdo) {
+            $cleanIds = array_map('intval', $ids);
+            $inClause = implode(',', $cleanIds);
+            $pdo->exec("DELETE FROM `zamzy_careers_applications` WHERE `id` IN ($inClause)");
+            $msg = count($cleanIds) . " applications deleted.";
+        }
+    }
+
+    // 7. Edit Application
+    elseif ($action === 'edit_application') {
+        $id = intval($_POST['id'] ?? 0);
+        $name = trim($_POST['full_name'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $college = trim($_POST['location_college'] ?? '');
+        $skills = trim($_POST['primary_skills'] ?? '');
+        $status = trim($_POST['status'] ?? 'new');
+
+        if ($id > 0 && $pdo) {
+            $stmt = $pdo->prepare("UPDATE `zamzy_careers_applications` SET `full_name` = :n, `phone` = :p, `email` = :e, `location_college` = :c, `primary_skills` = :s, `status` = :st WHERE `id` = :id");
+            $stmt->execute([':n' => $name, ':p' => $phone, ':e' => $email, ':c' => $college, ':s' => $skills, ':st' => $status, ':id' => $id]);
+            $msg = "Application #$id updated successfully.";
         }
     }
 }
@@ -123,12 +161,12 @@ if ($pdo) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZAMZY Admin — Careers &amp; Freelance Guild Pool</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
     <style>
         .pagination-bar {
             display: flex;
@@ -164,10 +202,29 @@ if ($pdo) {
 </head>
 <body>
 
+<!-- Mobile Admin Navigation Header -->
+<div class="admin-mobile-header">
+    <div class="admin-mobile-brand">
+        <span class="admin-mobile-logo">ZAMZY<span>.</span></span>
+        <span class="admin-mobile-tag">Executive Console</span>
+    </div>
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Navigation">
+        ☰ Menu
+    </button>
+</div>
+
+<!-- Floating FAB Mobile Menu Button -->
+<button class="admin-floating-fab" id="adminFabToggle" aria-label="Open Navigation Menu">
+    ⚡ Menu
+</button>
+
+<!-- Mobile Drawer Overlay -->
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
 <div class="admin-shell">
 
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <!-- Sidebar Drawer -->
+    <aside class="admin-sidebar" id="adminSidebar">
         <div>
             <div class="admin-sidebar__brand">
                 <span class="admin-sidebar__logo">ZAMZY<span>.</span></span>
@@ -274,103 +331,115 @@ if ($pdo) {
                 </form>
             </div>
 
-            <!-- Applications Table -->
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Candidate Details</th>
-                            <th>College &amp; Location</th>
-                            <th>Primary Skills &amp; Experience</th>
-                            <th>Availability &amp; Payout</th>
-                            <th>Portfolio / Past Work</th>
-                            <th>Status</th>
-                            <th>Direct Contact</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($applications)): ?>
-                            <tr>
-                                <td colspan="9" style="text-align:center; padding:3rem; opacity:0.6;">No applications found matching your criteria.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($applications as $app): ?>
-                                <tr>
-                                    <td><strong>#<?= $app['id'] ?></strong></td>
-                                    <td>
-                                        <strong style="color:var(--white); font-size:0.9rem;"><?= htmlspecialchars($app['full_name']) ?></strong><br>
-                                        <span style="font-size:0.75rem; color:var(--cyan);"><?= htmlspecialchars($app['phone']) ?></span><br>
-                                        <span style="font-size:0.7rem; color:var(--faint);"><?= htmlspecialchars($app['email']) ?></span><br>
-                                        <span style="font-size:0.65rem; color:var(--dim);"><?= date('M j, Y', strtotime($app['created_at'])) ?></span>
-                                    </td>
-                                    <td>
-                                        <span style="font-weight:600; color:var(--white); font-size:0.8rem;">
-                                            🎓 <?= htmlspecialchars($app['location_college']) ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span style="color:var(--cyan); font-weight:700; font-size:0.8rem;">
-                                            <?= htmlspecialchars($app['primary_skills']) ?>
-                                        </span><br>
-                                        <span class="badge" style="font-size:0.65rem; margin-top:0.3rem;">
-                                            <?= htmlspecialchars($app['experience_level']) ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span style="font-size:0.75rem; color:var(--white);">⏱ <?= htmlspecialchars($app['availability_hours']) ?></span><br>
-                                        <span style="font-size:0.7rem; color:var(--faint);">💰 <?= htmlspecialchars($app['expected_payout']) ?></span>
-                                    </td>
-                                    <td style="max-width:240px; font-size:0.75rem; line-height:1.5;">
-                                        <?php if (!empty($app['portfolio_url'])): ?>
-                                            <a href="<?= htmlspecialchars($app['portfolio_url']) ?>" target="_blank" style="color:var(--cyan); text-decoration:underline;">
-                                                🔗 [Portfolio / GitHub]
-                                            </a><br>
-                                        <?php endif; ?>
-                                        <?php if (!empty($app['resume_file'])): ?>
-                                            <a href="../<?= htmlspecialchars($app['resume_file']) ?>" target="_blank" class="badge" style="display:inline-block; margin:0.25rem 0; background:rgba(6,182,212,0.15); color:var(--cyan); border:1px solid rgba(6,182,212,0.4); text-decoration:none; padding:3px 7px;">
-                                                📄 View Resume
-                                            </a><br>
-                                        <?php endif; ?>
-                                        <span style="color:var(--dim); font-size:0.7rem;"><?= nl2br(htmlspecialchars($app['past_work_notes'] ?? '—')) ?></span>
-                                    </td>
-                                    <td>
-                                        <span class="badge-status <?= htmlspecialchars($app['status']) ?>">
-                                            <?= strtoupper(str_replace('_', ' ', $app['status'])) ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php 
-                                            $cleanPhone = preg_replace('/[^0-9]/', '', $app['phone']);
-                                            $prefill = urlencode("Hello {$app['full_name']}! This is ZAMZY Digital Engineering (Zamzy.in). We reviewed your {$app['primary_skills']} profile for our Developer Guild. We have a client project sprint that matches your skillset.");
-                                        ?>
-                                        <a href="https://wa.me/<?= $cleanPhone ?>?text=<?= $prefill ?>" target="_blank" class="btn-admin btn-admin-sm">
-                                            💬 WhatsApp Lead
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <form action="careers.php" method="POST" style="display:flex; flex-direction:column; gap:0.4rem; min-width:130px;">
-                                            <input type="hidden" name="action" value="update_application">
-                                            <input type="hidden" name="id" value="<?= $app['id'] ?>">
-                                            
-                                            <select name="status" class="form-control-admin" style="padding:0.4rem 0.6rem; font-size:0.7rem;">
-                                                <option value="new" <?= $app['status'] === 'new' ? 'selected' : '' ?>>New</option>
-                                                <option value="shortlisted" <?= $app['status'] === 'shortlisted' ? 'selected' : '' ?>>Shortlisted</option>
-                                                <option value="assigned_project" <?= $app['status'] === 'assigned_project' ? 'selected' : '' ?>>Assigned Project</option>
-                                                <option value="active_guild" <?= $app['status'] === 'active_guild' ? 'selected' : '' ?>>Active Guild</option>
-                                                <option value="rejected" <?= $app['status'] === 'rejected' ? 'selected' : '' ?>>Rejected</option>
-                                            </select>
+            <!-- Bulk Action Bar -->
+            <form id="bulkForm" action="careers.php" method="POST">
+                <input type="hidden" name="action" value="delete_bulk_apps">
+                <div class="bulk-action-bar">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="selectAll" class="admin-checkbox">
+                        <strong>Select All</strong>
+                    </label>
+                    <button type="submit" class="btn-danger-admin" id="bulkDeleteBtn" style="display:none;" onclick="return confirm('Are you sure you want to PERMANENTLY DELETE selected candidate applications?')">
+                        🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
 
-                                            <button type="submit" class="btn-admin btn-admin-outline btn-admin-sm">Save</button>
-                                        </form>
-                                    </td>
+                <!-- Applications Table -->
+                <div class="table-responsive-admin">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;"></th>
+                                <th>ID</th>
+                                <th>Candidate Details</th>
+                                <th>College &amp; Location</th>
+                                <th>Primary Skills &amp; Experience</th>
+                                <th>Availability &amp; Payout</th>
+                                <th>Portfolio / Past Work</th>
+                                <th>Status</th>
+                                <th>Direct Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($applications)): ?>
+                                <tr>
+                                    <td colspan="10" style="text-align:center; padding:3rem; opacity:0.6;">No applications found matching your criteria.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                            <?php else: ?>
+                                <?php foreach ($applications as $app): ?>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="ids[]" value="<?= $app['id'] ?>" class="admin-checkbox rowCheckbox">
+                                        </td>
+                                        <td><strong>#<?= $app['id'] ?></strong></td>
+                                        <td>
+                                            <strong style="color:var(--white); font-size:0.9rem;"><?= htmlspecialchars($app['full_name']) ?></strong><br>
+                                            <span style="font-size:0.75rem; color:var(--cyan);"><?= htmlspecialchars($app['phone']) ?></span><br>
+                                            <span style="font-size:0.7rem; color:var(--faint);"><?= htmlspecialchars($app['email']) ?></span><br>
+                                            <span style="font-size:0.65rem; color:var(--dim);"><?= date('M j, Y', strtotime($app['created_at'])) ?></span>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight:600; color:var(--white); font-size:0.8rem;">
+                                                🎓 <?= htmlspecialchars($app['location_college']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="color:var(--cyan); font-weight:700; font-size:0.8rem;">
+                                                <?= htmlspecialchars($app['primary_skills']) ?>
+                                            </span><br>
+                                            <span class="badge" style="font-size:0.65rem; margin-top:0.3rem;">
+                                                <?= htmlspecialchars($app['experience_level']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-size:0.75rem; color:var(--white);">⏱ <?= htmlspecialchars($app['availability_hours']) ?></span><br>
+                                            <span style="font-size:0.7rem; color:var(--faint);">💰 <?= htmlspecialchars($app['expected_payout']) ?></span>
+                                        </td>
+                                        <td style="max-width:240px; font-size:0.75rem; line-height:1.5;">
+                                            <?php if (!empty($app['portfolio_url'])): ?>
+                                                <a href="<?= htmlspecialchars($app['portfolio_url']) ?>" target="_blank" style="color:var(--cyan); text-decoration:underline;">
+                                                    🔗 [Portfolio / GitHub]
+                                                </a><br>
+                                            <?php endif; ?>
+                                            <?php if (!empty($app['resume_file'])): ?>
+                                                <a href="../<?= htmlspecialchars($app['resume_file']) ?>" target="_blank" class="badge" style="display:inline-block; margin:0.25rem 0; background:rgba(6,182,212,0.15); color:var(--cyan); border:1px solid rgba(6,182,212,0.4); text-decoration:none; padding:3px 7px;">
+                                                    📄 View Resume
+                                                </a><br>
+                                            <?php endif; ?>
+                                            <span style="color:var(--dim); font-size:0.7rem;"><?= nl2br(htmlspecialchars($app['past_work_notes'] ?? '—')) ?></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge-status <?= htmlspecialchars($app['status']) ?>">
+                                                <?= strtoupper(str_replace('_', ' ', $app['status'])) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                                $cleanPhone = preg_replace('/[^0-9]/', '', $app['phone']);
+                                                $prefill = urlencode("Hello {$app['full_name']}! This is ZAMZY Digital Engineering (Zamzy.in). We reviewed your {$app['primary_skills']} profile for our Developer Guild. We have a client project sprint that matches your skillset.");
+                                            ?>
+                                            <a href="https://wa.me/<?= $cleanPhone ?>?text=<?= $prefill ?>" target="_blank" class="btn-admin btn-admin-sm">
+                                                💬 WhatsApp Lead
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div style="display:flex; gap:0.4rem; align-items:center;">
+                                                <button type="button" class="btn-edit-admin" onclick="openEditModal(<?= htmlspecialchars(json_encode($app)) ?>)">
+                                                    ✏️ Edit
+                                                </button>
+                                                <button type="button" class="btn-danger-admin" style="padding:0.35rem 0.6rem; font-size:0.72rem;" onclick="deleteSingleApp(<?= $app['id'] ?>)">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
 
             <!-- Pagination Controls -->
             <?php if ($totalPages > 1): ?>
@@ -525,5 +594,143 @@ if ($pdo) {
 
 </div>
 
+<!-- Single Delete Form -->
+<form id="singleDeleteForm" action="careers.php" method="POST" style="display:none;">
+    <input type="hidden" name="action" value="delete_app">
+    <input type="hidden" name="id" id="singleDeleteId" value="">
+</form>
+
+<!-- Edit Candidate Modal Dialog -->
+<div class="admin-modal" id="editModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">✏️ Edit Candidate Profile</h3>
+            <button class="admin-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form action="careers.php" method="POST" style="display:flex; flex-direction:column; gap:1rem;">
+            <input type="hidden" name="action" value="edit_application">
+            <input type="hidden" name="id" id="editAppId" value="">
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Candidate Full Name *</label>
+                <input type="text" name="full_name" id="editName" class="search-input" style="width:100%;" required>
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">WhatsApp / Phone *</label>
+                <input type="text" name="phone" id="editPhone" class="search-input" style="width:100%;" required>
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Email Address</label>
+                <input type="email" name="email" id="editEmail" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">College / Location</label>
+                <input type="text" name="location_college" id="editCollege" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Primary Tech Stack / Skills</label>
+                <input type="text" name="primary_skills" id="editSkills" class="search-input" style="width:100%;">
+            </div>
+
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Application Status</label>
+                <select name="status" id="editStatus" class="form-control-admin" style="width:100%;">
+                    <option value="new">New</option>
+                    <option value="shortlisted">Shortlisted</option>
+                    <option value="assigned_project">Assigned Project</option>
+                    <option value="active_guild">Active Guild Member</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.8rem; margin-top:0.8rem;">
+                <button type="button" class="btn-admin btn-admin-outline" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-admin">Save Candidate Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('adminMobileToggle');
+    const fabBtn = document.getElementById('adminFabToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
+
+    const toggleMenu = () => {
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+    };
+
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleMenu);
+    if (fabBtn) fabBtn.addEventListener('click', toggleMenu);
+
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    }
+
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateBulkState() {
+        const checked = document.querySelectorAll('.rowCheckbox:checked');
+        const count = checked.length;
+        selectedCount.textContent = count;
+        if (count > 0) {
+            bulkDeleteBtn.style.display = 'inline-flex';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', (e) => {
+            rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            updateBulkState();
+        });
+    }
+
+    rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (!cb.checked && selectAll) selectAll.checked = false;
+            updateBulkState();
+        });
+    });
+});
+
+function deleteSingleApp(id) {
+    if (confirm('Are you sure you want to PERMANENTLY DELETE Candidate Application #' + id + '?')) {
+        document.getElementById('singleDeleteId').value = id;
+        document.getElementById('singleDeleteForm').submit();
+    }
+}
+
+function openEditModal(app) {
+    document.getElementById('editAppId').value = app.id;
+    document.getElementById('editName').value = app.full_name || '';
+    document.getElementById('editPhone').value = app.phone || '';
+    document.getElementById('editEmail').value = app.email || '';
+    document.getElementById('editCollege').value = app.location_college || '';
+    document.getElementById('editSkills').value = app.primary_skills || '';
+    document.getElementById('editStatus').value = app.status || 'new';
+    document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+}
+</script>
 </body>
 </html>

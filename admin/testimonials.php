@@ -78,6 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("DELETE FROM `zamzy_testimonials` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
         $msg = 'Testimonial deleted.';
+    } elseif ($action === 'delete_bulk') {
+        $ids = $_POST['ids'] ?? [];
+        if (!empty($ids) && is_array($ids) && $pdo) {
+            $cleanIds = array_map('intval', $ids);
+            $inClause = implode(',', $cleanIds);
+            $pdo->exec("DELETE FROM `zamzy_testimonials` WHERE `id` IN ($inClause)");
+            $msg = count($cleanIds) . " testimonials deleted successfully.";
+        }
     }
 }
 
@@ -92,23 +100,42 @@ if ($pdo) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZAMZY Admin — Reviews &amp; Social Proof</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
 </head>
 <body>
 
+<!-- Mobile Admin Navigation Header -->
+<div class="admin-mobile-header">
+    <div class="admin-mobile-brand">
+        <span class="admin-mobile-logo">ZAMZY<span>.</span></span>
+        <span class="admin-mobile-tag">Executive Console</span>
+    </div>
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Navigation">
+        ☰ Menu
+    </button>
+</div>
+
+<!-- Floating FAB Mobile Menu Button -->
+<button class="admin-floating-fab" id="adminFabToggle" aria-label="Open Navigation Menu">
+    ⚡ Menu
+</button>
+
+<!-- Mobile Drawer Overlay -->
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
 <div class="admin-shell">
 
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <!-- Sidebar Drawer -->
+    <aside class="admin-sidebar" id="adminSidebar">
         <div>
             <div class="admin-sidebar__brand">
                 <span class="admin-sidebar__logo">ZAMZY<span>.</span></span>
-                <span class="admin-sidebar__sub">Executive Control</span>
+                <span class="admin-sidebar__sub">Executive Console</span>
             </div>
 
             <nav class="admin-nav">
@@ -135,47 +162,51 @@ if ($pdo) {
         
         <header class="admin-topbar">
             <div>
-                <h1 class="admin-page-title">Reviews &amp; Proof</h1>
-                <p class="admin-page-sub">Manage and edit verified client testimonials published on the public showcase</p>
+                <h1 class="admin-page-title">Reviews &amp; Social Proof</h1>
+                <p class="admin-page-sub">Manage Client Testimonials, Ratings &amp; Featured Case Studies</p>
             </div>
             <div class="admin-topbar__actions">
-                <a href="#add-form" class="btn-admin">+ Add New Testimonial</a>
+                <a href="testimonials.php" class="btn-admin btn-admin-outline">Refresh Data</a>
             </div>
         </header>
 
         <?php if (!empty($msg)): ?>
             <div class="alert-box">✓ <?= htmlspecialchars($msg) ?></div>
         <?php endif; ?>
-
         <?php if (!empty($error)): ?>
-            <div class="alert-box" style="border-color:#ef4444; background:rgba(239, 68, 68, 0.15); color:#fca5a5;">✕ <?= htmlspecialchars($error) ?></div>
+            <div class="alert-box" style="border-color:#ef4444; background:rgba(239,68,68,0.1); color:#ff6b6b;">⚠ <?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <!-- Add Testimonial Card -->
-        <div class="admin-card" id="add-form">
-            <h3 class="admin-card__title">+ Publish Verified Client Review</h3>
+        <div class="admin-card" style="margin-bottom:2rem;">
+            <h3 style="font-family:var(--display); font-size:1.1rem; color:var(--white); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                ➕ Add New Client Testimonial
+            </h3>
             <form action="testimonials.php" method="POST">
                 <input type="hidden" name="action" value="add">
                 
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.2rem; margin-bottom:1.2rem;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1rem;">
                     <div class="form-group-admin">
-                        <label class="form-label-admin">Client Full Name *</label>
-                        <input type="text" name="client_name" class="form-control-admin" placeholder="e.g. Karthik Subramanian" required>
+                        <label class="form-label-admin">Client Name *</label>
+                        <input type="text" name="client_name" class="form-control-admin" placeholder="e.g. Samir A." required>
                     </div>
                     <div class="form-group-admin">
-                        <label class="form-label-admin">Company / Brand *</label>
-                        <input type="text" name="company_name" class="form-control-admin" placeholder="e.g. Apex Retail" required>
+                        <label class="form-label-admin">Company / Organization *</label>
+                        <input type="text" name="company_name" class="form-control-admin" placeholder="e.g. ShaCart Technologies" required>
                     </div>
                     <div class="form-group-admin">
                         <label class="form-label-admin">Role / Title</label>
-                        <input type="text" name="role" class="form-control-admin" placeholder="e.g. Founder & CEO">
+                        <input type="text" name="role" class="form-control-admin" placeholder="e.g. Founder &amp; CEO">
                     </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1rem;">
                     <div class="form-group-admin">
                         <label class="form-label-admin">Location</label>
                         <input type="text" name="location" class="form-control-admin" placeholder="e.g. Anna Nagar, Chennai" value="Anna Nagar, Chennai">
                     </div>
                     <div class="form-group-admin">
-                        <label class="form-label-admin">Star Rating</label>
+                        <label class="form-label-admin">Rating (Stars)</label>
                         <select name="rating" class="form-control-admin">
                             <option value="5" selected>★★★★★ (5 Stars)</option>
                             <option value="4">★★★★☆ (4 Stars)</option>
@@ -194,7 +225,7 @@ if ($pdo) {
                 </div>
 
                 <div style="margin-bottom:1.5rem; display:flex; align-items:center; gap:0.6rem;">
-                    <input type="checkbox" id="featured" name="is_featured" value="1" checked>
+                    <input type="checkbox" id="featured" name="is_featured" value="1" checked class="admin-checkbox">
                     <label for="featured" style="font-size:0.75rem; font-family:var(--mono); color:var(--dim);">Feature on Public Landing Page</label>
                 </div>
 
@@ -202,159 +233,175 @@ if ($pdo) {
             </form>
         </div>
 
-        <!-- Existing Testimonials Table with EDIT Capability -->
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Client &amp; Company</th>
-                        <th>Rating &amp; Scope</th>
-                        <th>Review Text</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($testimonials)): ?>
+        <!-- Bulk Action Bar -->
+        <form id="bulkForm" action="testimonials.php" method="POST">
+            <input type="hidden" name="action" value="delete_bulk">
+            <div class="bulk-action-bar">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="selectAll" class="admin-checkbox">
+                    <strong>Select All</strong>
+                </label>
+                <button type="submit" class="btn-danger-admin" id="bulkDeleteBtn" style="display:none;" onclick="return confirm('Are you sure you want to PERMANENTLY DELETE selected testimonials?')">
+                    🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+            </div>
+
+            <!-- Testimonials Table -->
+            <div class="table-responsive-admin">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td colspan="6" style="text-align:center; padding:3rem; opacity:0.6;">No testimonials recorded yet.</td>
+                            <th style="width:40px;"></th>
+                            <th>ID</th>
+                            <th>Client &amp; Company</th>
+                            <th>Rating &amp; Scope</th>
+                            <th>Review Text</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($testimonials as $t): ?>
-                            <?php 
-                                $isPub = intval($t['is_published'] ?? $t['is_approved'] ?? 1); 
-                                $isFeat = intval($t['is_featured'] ?? 1);
-                            ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($testimonials)): ?>
                             <tr>
-                                <td><strong>#<?= $t['id'] ?></strong></td>
-                                <td>
-                                    <strong><?= htmlspecialchars($t['client_name']) ?></strong><br>
-                                    <span style="font-size:0.7rem; color:var(--cyan);"><?= htmlspecialchars($t['role'] ?? '') ?> @ <?= htmlspecialchars($t['company_name']) ?></span><br>
-                                    <span style="font-size:0.65rem; color:var(--faint);">📍 <?= htmlspecialchars($t['location'] ?? 'Chennai') ?></span>
-                                </td>
-                                <td>
-                                    <span style="color:var(--cyan);"><?= str_repeat('★', intval($t['rating'] ?? 5)) ?></span><br>
-                                    <span style="font-size:0.68rem; color:var(--faint);">
-                                        <?= htmlspecialchars($t['project_type'] ?? 'Custom Software') ?>
-                                    </span>
-                                </td>
-                                <td style="max-width:320px; line-height:1.6; font-size:0.75rem;">
-                                    "<?= htmlspecialchars($t['review_text']) ?>"
-                                </td>
-                                <td>
-                                    <?php if ($isPub): ?>
-                                        <span class="badge-status converted">Live</span>
-                                    <?php else: ?>
-                                        <span class="badge-status">Hidden</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
-                                        <!-- Edit Button (Opens Modal) -->
-                                        <button type="button" class="btn-admin btn-admin-sm edit-test-btn"
-                                            data-id="<?= $t['id'] ?>"
-                                            data-name="<?= htmlspecialchars($t['client_name'], ENT_QUOTES) ?>"
-                                            data-company="<?= htmlspecialchars($t['company_name'], ENT_QUOTES) ?>"
-                                            data-role="<?= htmlspecialchars($t['role'] ?? '', ENT_QUOTES) ?>"
-                                            data-location="<?= htmlspecialchars($t['location'] ?? '', ENT_QUOTES) ?>"
-                                            data-rating="<?= intval($t['rating'] ?? 5) ?>"
-                                            data-project="<?= htmlspecialchars($t['project_type'] ?? '', ENT_QUOTES) ?>"
-                                            data-review="<?= htmlspecialchars($t['review_text'], ENT_QUOTES) ?>"
-                                            data-featured="<?= $isFeat ?>"
-                                            data-published="<?= $isPub ?>"
-                                            style="padding:0.35rem 0.75rem;">
-                                            ✏️ Edit
-                                        </button>
-
-                                        <form action="testimonials.php" method="POST" style="display:inline;">
-                                            <input type="hidden" name="action" value="toggle_publish">
-                                            <input type="hidden" name="id" value="<?= $t['id'] ?>">
-                                            <input type="hidden" name="current_status" value="<?= $isPub ?>">
-                                            <button type="submit" class="btn-admin btn-admin-outline btn-admin-sm" style="padding:0.35rem 0.65rem;">
-                                                <?= $isPub ? 'Hide' : 'Publish' ?>
-                                            </button>
-                                        </form>
-
-                                        <form action="testimonials.php" method="POST" style="display:inline;" onsubmit="return confirm('Delete this testimonial permanently?');">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="id" value="<?= $t['id'] ?>">
-                                            <button type="submit" class="btn-admin btn-admin-sm" style="background:#ef4444; border-color:#ef4444; padding:0.35rem 0.65rem;">✕</button>
-                                        </form>
-                                    </div>
-                                </td>
+                                <td colspan="7" style="text-align:center; padding:3rem; opacity:0.6;">No testimonials recorded yet.</td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                        <?php else: ?>
+                            <?php foreach ($testimonials as $t): ?>
+                                <?php 
+                                    $isPub = intval($t['is_published'] ?? $t['is_approved'] ?? 1); 
+                                    $isFeat = intval($t['is_featured'] ?? 1);
+                                ?>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="ids[]" value="<?= $t['id'] ?>" class="admin-checkbox rowCheckbox">
+                                    </td>
+                                    <td><strong>#<?= $t['id'] ?></strong></td>
+                                    <td>
+                                        <strong style="color:var(--white);"><?= htmlspecialchars($t['client_name']) ?></strong><br>
+                                        <span style="font-size:0.7rem; color:var(--cyan);"><?= htmlspecialchars($t['role'] ?? '') ?> @ <?= htmlspecialchars($t['company_name']) ?></span><br>
+                                        <span style="font-size:0.65rem; color:var(--faint);">📍 <?= htmlspecialchars($t['location'] ?? 'Chennai') ?></span>
+                                    </td>
+                                    <td>
+                                        <span style="color:var(--cyan);"><?= str_repeat('★', intval($t['rating'] ?? 5)) ?></span><br>
+                                        <span style="font-size:0.68rem; color:var(--faint);">
+                                            <?= htmlspecialchars($t['project_type'] ?? 'Custom Software') ?>
+                                        </span>
+                                    </td>
+                                    <td style="max-width:320px; line-height:1.6; font-size:0.75rem;">
+                                        "<?= htmlspecialchars($t['review_text']) ?>"
+                                    </td>
+                                    <td>
+                                        <?php if ($isPub): ?>
+                                            <span class="badge-status converted">Live</span>
+                                        <?php else: ?>
+                                            <span class="badge-status">Hidden</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; gap:0.4rem; align-items:center;">
+                                            <button type="button" class="btn-edit-admin edit-test-btn"
+                                                data-id="<?= $t['id'] ?>"
+                                                data-name="<?= htmlspecialchars($t['client_name'], ENT_QUOTES) ?>"
+                                                data-company="<?= htmlspecialchars($t['company_name'], ENT_QUOTES) ?>"
+                                                data-role="<?= htmlspecialchars($t['role'] ?? '', ENT_QUOTES) ?>"
+                                                data-location="<?= htmlspecialchars($t['location'] ?? '', ENT_QUOTES) ?>"
+                                                data-rating="<?= intval($t['rating'] ?? 5) ?>"
+                                                data-project="<?= htmlspecialchars($t['project_type'] ?? '', ENT_QUOTES) ?>"
+                                                data-review="<?= htmlspecialchars($t['review_text'], ENT_QUOTES) ?>"
+                                                data-featured="<?= $isFeat ?>"
+                                                data-published="<?= $isPub ?>">
+                                                ✏️ Edit
+                                            </button>
+
+                                            <button type="button" class="btn-danger-admin" style="padding:0.35rem 0.6rem; font-size:0.72rem;" onclick="deleteSingleTestimonial(<?= $t['id'] ?>)">
+                                                🗑️
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </form>
 
     </main>
 
 </div>
 
+<!-- Single Delete Form -->
+<form id="singleDeleteForm" action="testimonials.php" method="POST" style="display:none;">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="id" id="singleDeleteId" value="">
+</form>
+
 <!-- Edit Testimonial Modal -->
-<div class="modal-backdrop" id="edit-test-modal" style="display:none; position:fixed; inset:0; background:rgba(5,5,5,0.85); backdrop-filter:blur(14px); z-index:9999; align-items:center; justify-content:center; padding:1.5rem;">
-    <div class="admin-card" style="max-width:680px; width:100%; position:relative; box-shadow:0 0 50px rgba(6,182,212,0.3); border-color:var(--cyan);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
-            <h3 class="admin-card__title" style="margin-bottom:0;">✏️ Edit Testimonial #<span id="edit-id-display"></span></h3>
-            <span id="close-edit-modal" style="font-size:1.6rem; cursor:pointer; color:var(--dim); line-height:1;">&times;</span>
+<div class="admin-modal" id="edit-test-modal">
+    <div class="admin-modal-content" style="max-width:620px;">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">✏️ Edit Testimonial</h3>
+            <button class="admin-modal-close" id="close-edit-modal">&times;</button>
         </div>
-
-        <form action="testimonials.php" method="POST">
+        <form action="testimonials.php" method="POST" style="display:flex; flex-direction:column; gap:1rem;">
             <input type="hidden" name="action" value="edit">
-            <input type="hidden" name="id" id="edit-id">
+            <input type="hidden" name="id" id="edit_id">
 
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Client Name *</label>
-                    <input type="text" name="client_name" id="edit-name" class="form-control-admin" required>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Client Name *</label>
+                    <input type="text" name="client_name" id="edit_name" class="search-input" style="width:100%;" required>
                 </div>
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Company *</label>
-                    <input type="text" name="company_name" id="edit-company" class="form-control-admin" required>
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Company Name *</label>
+                    <input type="text" name="company_name" id="edit_company" class="search-input" style="width:100%;" required>
                 </div>
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Role</label>
-                    <input type="text" name="role" id="edit-role" class="form-control-admin">
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Role / Title</label>
+                    <input type="text" name="role" id="edit_role" class="search-input" style="width:100%;">
                 </div>
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Location</label>
-                    <input type="text" name="location" id="edit-location" class="form-control-admin">
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Location</label>
+                    <input type="text" name="location" id="edit_location" class="search-input" style="width:100%;">
                 </div>
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Star Rating</label>
-                    <select name="rating" id="edit-rating" class="form-control-admin">
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Rating (Stars)</label>
+                    <select name="rating" id="edit_rating" class="form-control-admin" style="width:100%;">
                         <option value="5">★★★★★ (5 Stars)</option>
                         <option value="4">★★★★☆ (4 Stars)</option>
                         <option value="3">★★★☆☆ (3 Stars)</option>
                     </select>
                 </div>
-                <div class="form-group-admin">
-                    <label class="form-label-admin">Project Scope</label>
-                    <input type="text" name="project_type" id="edit-project" class="form-control-admin">
+                <div>
+                    <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Project Scope</label>
+                    <input type="text" name="project_type" id="edit_project" class="search-input" style="width:100%;">
                 </div>
             </div>
 
-            <div class="form-group-admin" style="margin-bottom:1rem;">
-                <label class="form-label-admin">Testimonial Content *</label>
-                <textarea name="review_text" id="edit-review" class="form-control-admin" style="min-height:90px;" required></textarea>
+            <div>
+                <label style="font-family:var(--mono); font-size:0.75rem; color:var(--cyan); margin-bottom:0.4rem; display:block;">Review Content *</label>
+                <textarea name="review_text" id="edit_review" class="search-input" style="width:100%; min-height:100px; font-family:sans-serif; line-height:1.5;" required></textarea>
             </div>
 
-            <div style="display:flex; gap:1.6rem; margin-bottom:1.4rem; flex-wrap:wrap;">
-                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-family:var(--mono);">
-                    <input type="checkbox" name="is_featured" id="edit-featured" value="1">
-                    Featured on Landing Page
+            <div style="display:flex; gap:1.5rem; margin-top:0.4rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" name="is_featured" id="edit_featured" value="1" class="admin-checkbox">
+                    <span style="font-family:var(--mono); font-size:0.75rem;">Feature on Home</span>
                 </label>
-                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-family:var(--mono);">
-                    <input type="checkbox" name="is_published" id="edit-published" value="1">
-                    Live / Published
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" name="is_published" id="edit_published" value="1" class="admin-checkbox">
+                    <span style="font-family:var(--mono); font-size:0.75rem;">Publish Live</span>
                 </label>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; gap:0.8rem;">
-                <button type="button" id="cancel-edit-modal" class="btn-admin btn-admin-outline">Cancel</button>
+            <div style="display:flex; justify-content:flex-end; gap:0.8rem; margin-top:0.8rem;">
+                <button type="button" class="btn-admin btn-admin-outline" id="close-modal-btn">Cancel</button>
                 <button type="submit" class="btn-admin">Update Testimonial →</button>
             </div>
         </form>
@@ -363,41 +410,90 @@ if ($pdo) {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const editModal = document.getElementById('edit-test-modal');
-    const closeBtn = document.getElementById('close-edit-modal');
-    const cancelBtn = document.getElementById('cancel-edit-modal');
+    const toggleBtn = document.getElementById('adminMobileToggle');
+    const fabBtn = document.getElementById('adminFabToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('adminSidebarOverlay');
 
-    document.querySelectorAll('.edit-test-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('edit-id').value = btn.dataset.id;
-            document.getElementById('edit-id-display').textContent = btn.dataset.id;
-            document.getElementById('edit-name').value = btn.dataset.name;
-            document.getElementById('edit-company').value = btn.dataset.company;
-            document.getElementById('edit-role').value = btn.dataset.role;
-            document.getElementById('edit-location').value = btn.dataset.location;
-            document.getElementById('edit-rating').value = btn.dataset.rating;
-            document.getElementById('edit-project').value = btn.dataset.project;
-            document.getElementById('edit-review').value = btn.dataset.review;
-            document.getElementById('edit-featured').checked = btn.dataset.featured == '1';
-            document.getElementById('edit-published').checked = btn.dataset.published == '1';
+    const toggleMenu = () => {
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+    };
 
-            editModal.style.display = 'flex';
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleMenu);
+    if (fabBtn) fabBtn.addEventListener('click', toggleMenu);
+
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    }
+
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateBulkState() {
+        const checked = document.querySelectorAll('.rowCheckbox:checked');
+        const count = checked.length;
+        selectedCount.textContent = count;
+        if (count > 0) {
+            bulkDeleteBtn.style.display = 'inline-flex';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', (e) => {
+            rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            updateBulkState();
+        });
+    }
+
+    rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (!cb.checked && selectAll) selectAll.checked = false;
+            updateBulkState();
         });
     });
 
-    function hideModal() {
-        editModal.style.display = 'none';
-    }
+    // Edit Modal logic
+    const modal = document.getElementById('edit-test-modal');
+    const closeBtn = document.getElementById('close-edit-modal');
+    const cancelBtn = document.getElementById('close-modal-btn');
 
-    if (closeBtn) closeBtn.addEventListener('click', hideModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
-    if (editModal) {
-        editModal.addEventListener('click', (e) => {
-            if (e.target === editModal) hideModal();
+    function closeModal() { modal.classList.remove('open'); }
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    document.querySelectorAll('.edit-test-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('edit_id').value = btn.getAttribute('data-id');
+            document.getElementById('edit_name').value = btn.getAttribute('data-name');
+            document.getElementById('edit_company').value = btn.getAttribute('data-company');
+            document.getElementById('edit_role').value = btn.getAttribute('data-role');
+            document.getElementById('edit_location').value = btn.getAttribute('data-location');
+            document.getElementById('edit_rating').value = btn.getAttribute('data-rating');
+            document.getElementById('edit_project').value = btn.getAttribute('data-project');
+            document.getElementById('edit_review').value = btn.getAttribute('data-review');
+            document.getElementById('edit_featured').checked = (btn.getAttribute('data-featured') === '1');
+            document.getElementById('edit_published').checked = (btn.getAttribute('data-published') === '1');
+            modal.classList.add('open');
         });
-    }
+    });
 });
-</script>
 
+function deleteSingleTestimonial(id) {
+    if (confirm('Are you sure you want to PERMANENTLY DELETE Testimonial #' + id + '?')) {
+        document.getElementById('singleDeleteId').value = id;
+        document.getElementById('singleDeleteForm').submit();
+    }
+}
+</script>
 </body>
 </html>
