@@ -284,6 +284,61 @@ require_once __DIR__ . '/db.php';
     </div>
   </footer>
 
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="back-to-top" aria-label="Back to Top" title="Back to Top">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <!-- AI CHATBOT FLOATING ICON -->
+  <button id="ai-chat-btn" class="ai-chat-btn" aria-label="Chat with ZAMZY AI" title="Chat with ZAMZY AI">
+    <img src="images/ai-chat-icon.jpg" alt="ZAMZY AI" />
+    <span class="ai-chat-badge">AI</span>
+  </button>
+
+  <!-- AI Chat Modal -->
+  <div id="ai-chat-modal" class="ai-chat-modal">
+    <div class="ai-chat-panel">
+      <div class="ai-chat-header">
+        <div class="ai-chat-header-info">
+          <div class="ai-chat-avatar" style="overflow:hidden; padding:0;">
+            <img src="images/ai-chat-icon.jpg" alt="AI"
+              style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+          </div>
+          <div>
+            <div class="ai-chat-name">ZAMZY Assistant</div>
+            <div class="ai-chat-status"><span class="ai-online-dot"></span> Online</div>
+          </div>
+        </div>
+        <button id="close-ai-chat" class="ai-chat-close" aria-label="Close chat">&times;</button>
+      </div>
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <div class="ai-msg ai-msg--bot">
+          <div class="ai-msg-bubble">👋 Hi! I'm ZAMZY's assistant. How can I help you today? Ask me about our services,
+            pricing, or start a project brief.</div>
+        </div>
+        <div class="ai-quick-btns">
+          <button class="ai-quick-btn" data-msg="What services do you offer?">Our Services</button>
+          <button class="ai-quick-btn" data-msg="What are your pricing plans?">Pricing</button>
+          <button class="ai-quick-btn" data-msg="I want to start a project">Start a Project</button>
+        </div>
+      </div>
+      <form class="ai-chat-input-row" id="ai-chat-form" autocomplete="off">
+        <input type="text" id="ai-chat-input" class="ai-chat-input" placeholder="Type your message..."
+          autocomplete="off" />
+        <button type="submit" class="ai-send-btn" aria-label="Send">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script src="tooplate-vora-bold-script.js"></script>
 </body>
 </html>

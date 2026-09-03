@@ -3270,10 +3270,11 @@ button {
   }
 
   .back-to-top {
-    bottom: 5.5rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
+    bottom: 8.8rem;
+    right: 1.1rem;
+    width: 42px;
+    height: 42px;
+    z-index: 1000;
   }
 
   .ai-chat-btn {
@@ -3281,12 +3282,15 @@ button {
     right: 1rem;
     width: 48px;
     height: 48px;
+    z-index: 1001;
   }
 
   .ai-chat-modal {
     bottom: 8.8rem;
     right: 0.8rem;
     width: calc(100vw - 1.6rem);
+    max-height: calc(100vh - 10.5rem);
+    z-index: 1005;
   }
 
   body {
@@ -4395,6 +4399,18 @@ button {
   height: 60px;
   pointer-events: none;
   z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .z-floating-container {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    transform: scale(0.7);
+    transform-origin: top right;
+    pointer-events: none;
+  }
 }
 
 .z {
