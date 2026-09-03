@@ -1495,8 +1495,14 @@
       <!-- Pricing Category Switcher Tabs -->
       <div class="pricing-tabs-wrap">
         <div class="pricing-tabs" role="tablist" aria-label="Pricing Categories">
-          <button type="button" class="pricing-tab active" id="tab-tech" data-target="rates-tech-panel" role="tab"
-            aria-selected="true" aria-controls="rates-tech-panel">
+          <button type="button" class="pricing-tab active" id="tab-web" data-target="rates-web-panel" role="tab"
+            aria-selected="true" aria-controls="rates-web-panel">
+            <span class="pricing-tab__icon">🚀</span>
+            <span class="pricing-tab__text">Website Packages</span>
+            <span class="pricing-tab__pill">3 Scopes</span>
+          </button>
+          <button type="button" class="pricing-tab" id="tab-tech" data-target="rates-tech-panel" role="tab"
+            aria-selected="false" aria-controls="rates-tech-panel">
             <span class="pricing-tab__icon">💻</span>
             <span class="pricing-tab__text">Tech &amp; Engineering</span>
             <span class="pricing-tab__pill">3 Scopes</span>
@@ -1511,9 +1517,135 @@
       </div>
 
       <!-- ═══════════════════════════════════════════════
+           PANEL 0: WEBSITE PACKAGES (BASIC, STANDARD, PREMIUM)
+      ═══════════════════════════════════════════════ -->
+      <div class="rates-panel active" id="rates-web-panel" role="tabpanel" aria-labelledby="tab-web">
+        <div class="rates-panel__bar">
+          <div class="rates-panel__title">
+            <span>🌐</span> Powerful Websites. Built for Growth.
+          </div>
+          <div class="rates-panel__scope">
+            Modern Design · High Performance · Lifetime Support on Every Plan
+          </div>
+        </div>
+
+        <div class="rates__grid">
+
+          <!-- Web Tier 01: BASIC -->
+          <div class="rate-card">
+            <div>
+              <span class="rate-card__tier">Launch Your Presence</span>
+              <h3 class="rate-card__name">BASIC</h3>
+              <div class="rate-card__price-box">
+                <div class="rate-card__price">₹5,000</div>
+                <div class="rate-card__price-sub">Starting Rate · Best for Individuals &amp; Startups</div>
+              </div>
+              <p class="rate-card__desc">
+                Clean, responsive, high-speed website to launch your online presence with basic SEO &amp; direct WhatsApp integration.
+              </p>
+              <ul class="rate-card__features">
+                <li>✓ Up to 3 Pages</li>
+                <li>✓ Responsive Design</li>
+                <li>✓ Basic UI Design</li>
+                <li>✓ Contact / Lead Form</li>
+                <li>✓ WhatsApp Integration</li>
+                <li>✓ Basic SEO Setup</li>
+                <li>✓ Speed Optimization (Basic)</li>
+                <li>✓ 1 Revision</li>
+                <li>✓ Lifetime Support</li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn btn-outline select-tier-btn" data-tier="BASIC Website Plan (Starting at ₹5,000)"
+                style="width:100%;">Choose Basic Plan →</button>
+            </div>
+          </div>
+
+          <!-- Web Tier 02: STANDARD (Featured) -->
+          <div class="rate-card featured">
+            <span class="rate-card__badge-top">★ MOST POPULAR</span>
+            <div>
+              <span class="rate-card__tier">Build Your Business</span>
+              <h3 class="rate-card__name">STANDARD</h3>
+              <div class="rate-card__price-box">
+                <div class="rate-card__price">₹12,000</div>
+                <div class="rate-card__price-sub">Starting Rate · Best for Growing Businesses</div>
+              </div>
+              <p class="rate-card__desc">
+                Feature-packed business site with custom UI, analytics tracking, CMS content manager, and basic animations.
+              </p>
+              <ul class="rate-card__features">
+                <li>✓ Up to 6 Pages</li>
+                <li>✓ Responsive Design</li>
+                <li>✓ Custom UI Design</li>
+                <li>✓ Contact / Lead Form</li>
+                <li>✓ WhatsApp Integration</li>
+                <li>✓ Basic SEO Setup</li>
+                <li>✓ Google Analytics &amp; Search Console</li>
+                <li>✓ Speed Optimization (Optimized)</li>
+                <li>✓ Animations &amp; Interactions (Basic)</li>
+                <li>✓ CMS / Easy Content Updates</li>
+                <li>✓ Third-Party Integrations (Basic)</li>
+                <li>✓ 2 Revisions</li>
+                <li>✓ Lifetime Support</li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn select-tier-btn" data-tier="STANDARD Website Plan (Starting at ₹12,000)"
+                style="width:100%;">Choose Standard Plan →</button>
+            </div>
+          </div>
+
+          <!-- Web Tier 03: PREMIUM -->
+          <div class="rate-card">
+            <div>
+              <span class="rate-card__tier">Scale Without Limits</span>
+              <h3 class="rate-card__name">PREMIUM</h3>
+              <div class="rate-card__price-box">
+                <div class="rate-card__price">₹20,000<span style="font-size:1.2rem; font-family:var(--mono);"> max</span></div>
+                <div class="rate-card__price-sub">Up to ₹20,000 · Best for Established Businesses</div>
+              </div>
+              <p class="rate-card__desc">
+                Complete enterprise web experience with advanced animations, custom integrations, advanced SEO, and CMS.
+              </p>
+              <ul class="rate-card__features">
+                <li>✓ Up to 10 Pages</li>
+                <li>✓ Responsive Design</li>
+                <li>✓ Custom UI Design</li>
+                <li>✓ Contact / Lead Form</li>
+                <li>✓ WhatsApp Integration</li>
+                <li>✓ Basic SEO Setup</li>
+                <li>✓ Google Analytics &amp; Search Console</li>
+                <li>✓ Speed Optimization (Advanced)</li>
+                <li>✓ Animations &amp; Interactions (Advanced)</li>
+                <li>✓ CMS / Easy Content Updates</li>
+                <li>✓ Third-Party Integrations (Advanced)</li>
+                <li>✓ 3 Revisions</li>
+                <li>✓ Lifetime Support</li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn btn-outline select-tier-btn" data-tier="PREMIUM Website Plan (Up to ₹20,000)"
+                style="width:100%;">Choose Premium Plan →</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="rates__guarantee-strip">
+          <div class="rates__guarantee-text">
+            <strong>Lifetime Support:</strong> We've got your back, always. Free maintenance &amp; bug-fix assistance on every plan.
+          </div>
+          <div>
+            <span class="badge" style="border-color:rgba(6,182,212,0.5); color:var(--cyan);">Modern &amp; Secure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
            PANEL 1: TECH & SOFTWARE ENGINEERING
       ═══════════════════════════════════════════════ -->
-      <div class="rates-panel active" id="rates-tech-panel" role="tabpanel" aria-labelledby="tab-tech">
+      <div class="rates-panel" id="rates-tech-panel" role="tabpanel" aria-labelledby="tab-tech" style="display:none;">
         <div class="rates-panel__bar">
           <div class="rates-panel__title">
             <span>💻</span> Software Engineering &amp; Architecture
@@ -2095,6 +2227,9 @@
                 <input list="budget-list" type="text" id="client-budget" class="form-input"
                   placeholder="e.g. ₹25,000 – ₹75,000" value="₹25,000 – ₹75,000 (Custom Web & App)" required />
                 <datalist id="budget-list">
+                  <option value="₹5,000 (Website Basic Plan)">
+                  <option value="₹12,000 (Website Standard Plan)">
+                  <option value="Up to ₹20,000 (Website Premium Plan)">
                   <option value="₹10,000 – ₹25,000 (MVP / Prototype)">
                   <option value="₹25,000 – ₹75,000 (Custom Web & App)">
                   <option value="₹75,000 – ₹2,00,000 (Enterprise SaaS)">

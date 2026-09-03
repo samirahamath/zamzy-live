@@ -302,7 +302,16 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       const selectedTier = btn.dataset.tier || '';
       if (tierBudgetSelect) {
-        if (selectedTier.includes('10,000')) {
+        if (selectedTier.includes('BASIC')) {
+          tierBudgetSelect.value = '₹5,000 (Website Basic Plan)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Website & Mobile App Development';
+        } else if (selectedTier.includes('STANDARD')) {
+          tierBudgetSelect.value = '₹12,000 (Website Standard Plan)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Website & Mobile App Development';
+        } else if (selectedTier.includes('PREMIUM')) {
+          tierBudgetSelect.value = 'Up to ₹20,000 (Website Premium Plan)';
+          if (tierTypeSelect) tierTypeSelect.value = 'Website & Mobile App Development';
+        } else if (selectedTier.includes('10,000')) {
           tierBudgetSelect.value = '₹10,000 – ₹25,000 (MVP / Prototype)';
           if (tierTypeSelect) tierTypeSelect.value = 'Custom SaaS Platform';
         } else if (selectedTier.includes('25,000')) {
